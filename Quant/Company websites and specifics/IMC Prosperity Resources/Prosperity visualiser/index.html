@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prosperity 3 — Trading Dashboard</title>
+  <meta name="description" content="Advanced order book visualization dashboard for IMC Prosperity 3 algorithmic trading competition.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span class="logo-text">Prosperity<span class="logo-accent">3</span></span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span id="topbar-file" class="topbar-info">No data loaded</span>
+    </div>
+    <div class="topbar-center">
+      <span id="topbar-timestamp" class="topbar-badge">T: —</span>
+      <span id="topbar-midprice" class="topbar-badge accent">Mid: —</span>
+    </div>
+    <div class="topbar-right">
+      <span id="topbar-datapoints" class="topbar-info"></span>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div id="main-layout">
+    <!-- Chart Area -->
+    <div id="chart-area">
+      <!-- Main Price Chart -->
+      <div id="main-chart-container" class="chart-panel">
+        <canvas id="main-chart"></canvas>
+        <div id="tooltip" class="tooltip hidden"></div>
+        <div id="crosshair-x" class="crosshair crosshair-x hidden"></div>
+        <div id="crosshair-y" class="crosshair crosshair-y hidden"></div>
+      </div>
+      <!-- PnL Chart -->
+      <div id="pnl-chart-container" class="chart-panel sub-chart">
+        <div class="sub-chart-label">PnL</div>
+        <canvas id="pnl-chart"></canvas>
+      </div>
+      <!-- Position Chart -->
+      <div id="pos-chart-container" class="chart-panel sub-chart">
+        <div class="sub-chart-label">Position</div>
+        <canvas id="pos-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <!-- Section 5: Selection Controls -->
+      <div class="sidebar-section" id="section-import">
+        <div class="section-header">
+          <span class="section-number">⑤</span>
+          <span class="section-title">Data & Selection</span>
+        </div>
+        <div class="section-body">
+          <div class="control-group">
+            <label class="control-label">Import Submission JSON (all-in-one)</label>
+            <div class="file-input-wrapper">
+              <input type="file" id="json-file" accept=".json,.log" class="file-input">
+              <button class="btn btn-file" style="background:var(--accent);border-color:var(--accent);color:#fff" onclick="document.getElementById('json-file').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                JSON Log
+              </button>
+              <span id="json-file-name" class="file-name">None</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">— or import CSVs separately —</label>
+            <div class="file-input-wrapper">
+              <input type="file" id="prices-file" accept=".csv,.json" class="file-input">
+              <button class="btn btn-file" onclick="document.getElementById('prices-file').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Prices
+              </button>
+              <span id="prices-file-name" class="file-name">None</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="file-input-wrapper">
+              <input type="file" id="trades-file" accept=".csv" class="file-input">
+              <button class="btn btn-file" onclick="document.getElementById('trades-file').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Trades
+              </button>
+              <span id="trades-file-name" class="file-name">None</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Product</label>
+            <select id="product-select" class="select-input">
+              <option value="">— Select —</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Normalize by</label>
+            <select id="normalize-select" class="select-input">
+              <option value="none">None</option>
+              <option value="mid_price">Mid Price</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Log Viewer -->
+      <div class="sidebar-section" id="section-log">
+        <div class="section-header">
+          <span class="section-number">④</span>
+          <span class="section-title">Market Info</span>
+        </div>
+        <div class="section-body">
+          <div id="log-viewer" class="log-viewer">
+            <pre id="log-content">Hover over the chart to see details...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Trade Filtering -->
+      <div class="sidebar-section" id="section-filter">
+        <div class="section-header">
+          <span class="section-number">⑥</span>
+          <span class="section-title">Display & Filtering</span>
+        </div>
+        <div class="section-body">
+          <div class="control-group">
+            <div class="toggle-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-ob" checked>
+                <span class="toggle-switch"></span>
+                Order Book
+              </label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-trades" checked>
+                <span class="toggle-switch"></span>
+                All Trades
+              </label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-midline" checked>
+                <span class="toggle-switch"></span>
+                Mid Price Line
+              </label>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Trade Quantity Filter</label>
+            <div class="range-inputs">
+              <div class="input-group">
+                <span class="input-prefix">Min</span>
+                <input type="number" id="qty-min" value="0" min="0" class="number-input">
+              </div>
+              <div class="input-group">
+                <span class="input-prefix">Max</span>
+                <input type="number" id="qty-max" value="999" min="0" class="number-input">
+              </div>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Quote Volume Cutoffs</label>
+            <div class="range-inputs">
+              <div class="input-group">
+                <span class="input-prefix">Bid cutoff</span>
+                <input type="number" id="bid-cutoff" value="0" min="0" class="number-input">
+              </div>
+              <div class="input-group">
+                <span class="input-prefix">Ask cutoff</span>
+                <input type="number" id="ask-cutoff" value="0" min="0" class="number-input">
+              </div>
+            </div>
+            <div class="file-name">Hide order-book quote levels with volume &lt; cutoff</div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Exact Volume Filter</label>
+            <div class="file-input-wrapper">
+              <label class="toggle-label" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" id="exact-volume-toggle">
+                <span class="toggle-switch"></span>
+                Enable exact-volume
+              </label>
+            </div>
+            <div class="file-input-wrapper" style="margin-top:8px;align-items:center;">
+              <input type="range" id="exact-volume" min="1" max="200" value="1" class="range-input">
+              <span id="exact-volume-val" class="range-value">1</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Show Trade Types</label>
+            <div class="toggle-row">
+              <label class="toggle-label"><input type="checkbox" id="show-own-buys" checked><span class="toggle-switch"></span>Own Buys (X)</label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label"><input type="checkbox" id="show-own-sells" checked><span class="toggle-switch"></span>Own Sells (○)</label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label"><input type="checkbox" id="show-bot-trades" checked><span class="toggle-switch"></span>Bot Trades (▲)</label>
+            </div>
+          </div>
+          <!-- Trader buttons will be dynamically populated -->
+          <div id="trader-buttons" class="trader-buttons"></div>
+        </div>
+      </div>
+
+      <!-- Section 8: Quote Volume Frequency -->
+<!--      <div class="sidebar-section" id="section-volfreq">
+        <div class="section-header">
+          <span class="section-number">⑧</span>
+          <span class="section-title">Quote Volume • Frequency</span>
+        </div>
+        <div class="section-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:12px;color:var(--muted)">Bid quote volume vs frequency</div>
+          <div style="height:80px;">
+            <canvas id="bid-hist" style="width:100%;height:100%"></canvas>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">Sell quote volume vs frequency</div>
+          <div style="height:80px;">
+            <canvas id="ask-hist" style="width:100%;height:100%"></canvas>
+          </div>
+        </div>
+      </div>
+    -->
+      <!-- Section 7: Performance -->
+      <div class="sidebar-section" id="section-perf">
+        <div class="section-header">
+          <span class="section-number">⑦</span>
+          <span class="section-title">Performance</span>
+        </div>
+        <div class="section-body">
+          <div class="control-group">
+            <label class="control-label">OB Point Size</label>
+            <input type="range" id="ob-size" min="1" max="10" value="4" class="range-input">
+          </div>
+          <div class="control-group">
+            <label class="control-label">Trade Marker Size</label>
+            <input type="range" id="trade-size" min="3" max="16" value="8" class="range-input">
+          </div>
+          <div class="control-group">
+            <label class="control-label">Downsample (max points)</label>
+            <input type="range" id="downsample" min="500" max="50000" value="10000" step="500" class="range-input">
+            <span id="downsample-val" class="range-value">10000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo data button -->
+      <div class="sidebar-section" id="section-demo">
+        <button id="load-demo" class="btn btn-accent btn-full">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Load Demo Data
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

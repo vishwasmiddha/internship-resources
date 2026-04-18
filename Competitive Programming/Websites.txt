@@ -1,0 +1,7 @@
+https://web.stanford.edu/class/cs97si/ - very nice to get started with cp
+https://mimoza.marmara.edu.tr/~msakalli/cse706_12/SkienaTheAlgorithmDesignManual.pdf
+Good for reference
+https://usaco.guide/
+https://youkn0wwho.academy/topic-list
+https://cses.fi/book/book.pdf
+https://github.com/lnishan/awesome-competitive-programming
