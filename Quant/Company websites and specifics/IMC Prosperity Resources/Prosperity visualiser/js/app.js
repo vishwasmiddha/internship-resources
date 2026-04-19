@@ -30,50 +30,50 @@ class ProsperityDashboard {
 
   _bindEvents() {
     // File imports
-    document.getElementById('prices-file').addEventListener('change', (e) => this._loadPrices(e));
-    document.getElementById('trades-file').addEventListener('change', (e) => this._loadTrades(e));
+    document.getElementById('prices-file')?.addEventListener('change', (e) => this._loadPrices(e));
+    document.getElementById('trades-file')?.addEventListener('change', (e) => this._loadTrades(e));
     document.getElementById('json-file')?.addEventListener('change', (e) => this._loadJSON(e));
 
     // Product selection
-    document.getElementById('product-select').addEventListener('change', (e) => {
+    document.getElementById('product-select')?.addEventListener('change', (e) => {
       this.selectedProduct = e.target.value;
       this._applyFilter();
     });
 
     // Normalization
-    document.getElementById('normalize-select').addEventListener('change', (e) => {
+    document.getElementById('normalize-select')?.addEventListener('change', (e) => {
       this.chart.setFilters({ normalize: e.target.value });
     });
 
     // Toggles
-    document.getElementById('toggle-ob').addEventListener('change', (e) => {
+    document.getElementById('toggle-ob')?.addEventListener('change', (e) => {
       this.chart.setFilters({ showOB: e.target.checked });
     });
-    document.getElementById('toggle-trades').addEventListener('change', (e) => {
+    document.getElementById('toggle-trades')?.addEventListener('change', (e) => {
       this.chart.setFilters({ showTrades: e.target.checked });
     });
-    document.getElementById('toggle-midline').addEventListener('change', (e) => {
+    document.getElementById('toggle-midline')?.addEventListener('change', (e) => {
       this.chart.setFilters({ showMidLine: e.target.checked });
     });
 
     // Quantity filter
-    document.getElementById('qty-min').addEventListener('input', (e) => {
+    document.getElementById('qty-min')?.addEventListener('input', (e) => {
       this.chart.setFilters({ qtyMin: parseInt(e.target.value) || 0 });
     });
-    document.getElementById('qty-max').addEventListener('input', (e) => {
+    document.getElementById('qty-max')?.addEventListener('input', (e) => {
       this.chart.setFilters({ qtyMax: parseInt(e.target.value) || 999 });
     });
 
     // Trade cutoff and type toggles
-    document.getElementById('trade-cutoff').addEventListener('input', (e) => {
+    document.getElementById('trade-cutoff')?.addEventListener('input', (e) => {
       this.chart.setFilters({ tradeVolumeCutoff: parseInt(e.target.value) || 0 });
     });
 
     // Bid/Ask quote cutoff
-    document.getElementById('bid-cutoff').addEventListener('input', (e) => {
+    document.getElementById('bid-cutoff')?.addEventListener('input', (e) => {
       this.chart.setFilters({ bidQuoteCutoff: parseInt(e.target.value) || 0 });
     });
-    document.getElementById('ask-cutoff').addEventListener('input', (e) => {
+    document.getElementById('ask-cutoff')?.addEventListener('input', (e) => {
       this.chart.setFilters({ askQuoteCutoff: parseInt(e.target.value) || 0 });
     });
 
@@ -92,31 +92,48 @@ class ProsperityDashboard {
       });
     }
 
-    document.getElementById('show-own-buys').addEventListener('change', (e) => {
-      this.chart.setFilters({ showOwnBuys: e.target.checked });
-    });
-    document.getElementById('show-own-sells').addEventListener('change', (e) => {
-      this.chart.setFilters({ showOwnSells: e.target.checked });
-    });
-    document.getElementById('show-bot-trades').addEventListener('change', (e) => {
-      this.chart.setFilters({ showBotTrades: e.target.checked });
-    });
+    // Trade type toggles
+    const buyToggle = document.getElementById('show-own-buys');
+    const sellToggle = document.getElementById('show-own-sells');
+    const botToggle = document.getElementById('show-bot-trades');
+    
+    console.log('Trade toggle elements:', { buyToggle, sellToggle, botToggle });
+    
+    if (buyToggle) {
+      buyToggle.addEventListener('change', (e) => {
+        console.log('showOwnBuys changed to:', e.target.checked);
+        this.chart.setFilters({ showOwnBuys: e.target.checked });
+      });
+    }
+    if (sellToggle) {
+      sellToggle.addEventListener('change', (e) => {
+        console.log('showOwnSells changed to:', e.target.checked);
+        this.chart.setFilters({ showOwnSells: e.target.checked });
+      });
+    }
+    if (botToggle) {
+      botToggle.addEventListener('change', (e) => {
+        console.log('showBotTrades changed to:', e.target.checked);
+        this.chart.setFilters({ showBotTrades: e.target.checked });
+      });
+    }
 
     // Performance
-    document.getElementById('ob-size').addEventListener('input', (e) => {
+    document.getElementById('ob-size')?.addEventListener('input', (e) => {
       this.chart.setFilters({ obSize: parseInt(e.target.value) });
     });
-    document.getElementById('trade-size').addEventListener('input', (e) => {
+    document.getElementById('trade-size')?.addEventListener('input', (e) => {
       this.chart.setFilters({ tradeSize: parseInt(e.target.value) });
     });
-    document.getElementById('downsample').addEventListener('input', (e) => {
+    document.getElementById('downsample')?.addEventListener('input', (e) => {
       const val = parseInt(e.target.value);
-      document.getElementById('downsample-val').textContent = val;
+      const downsampleVal = document.getElementById('downsample-val');
+      if (downsampleVal) downsampleVal.textContent = val;
       this.chart.setFilters({ maxPoints: val });
     });
 
     // Demo data
-    document.getElementById('load-demo').addEventListener('click', () => this._loadDemo());
+    document.getElementById('load-demo')?.addEventListener('click', () => this._loadDemo());
   }
 
   // ======================== FILE LOADING ========================
