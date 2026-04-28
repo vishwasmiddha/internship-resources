@@ -43,7 +43,8 @@ export class ChartRenderer {
       tradeVolumeCutoff: 0,
       showOwnBuys: true,
       showOwnSells: true,
-      showBotTrades: true
+      showBotTrades: true,
+      selectedTrader: 'ALL'
     };
     // quote cutoff filters
     this.filters.bidQuoteCutoff = 0;
@@ -230,7 +231,8 @@ export class ChartRenderer {
       t.timestamp >= this.viewStart && t.timestamp <= this.viewEnd &&
       t.quantity >= this.filters.qtyMin && t.quantity <= this.filters.qtyMax &&
       t.quantity >= (this.filters.tradeVolumeCutoff || 0) &&
-        (!this.filters.exactVolumeEnabled || Number(t.quantity) === Number(this.filters.exactVolume))
+        (!this.filters.exactVolumeEnabled || Number(t.quantity) === Number(this.filters.exactVolume)) &&
+        (!this.filters.selectedTrader || this.filters.selectedTrader === 'ALL' || t.buyer === this.filters.selectedTrader || t.seller === this.filters.selectedTrader)
     );
 
     // Find nearest trade marker to (hoverX, hoverY)
@@ -514,6 +516,9 @@ export class ChartRenderer {
         if (t.quantity < this.filters.qtyMin || t.quantity > this.filters.qtyMax) return false;
         if (t.quantity < (this.filters.tradeVolumeCutoff || 0)) return false;
         if (this.filters.exactVolumeEnabled && Number(t.quantity) !== Number(this.filters.exactVolume)) return false;
+        if (this.filters.selectedTrader && this.filters.selectedTrader !== 'ALL') {
+          if (t.buyer !== this.filters.selectedTrader && t.seller !== this.filters.selectedTrader) return false;
+        }
 
         const buyerUpper = (t.buyer || '').toString().toUpperCase();
         const sellerUpper = (t.seller || '').toString().toUpperCase();

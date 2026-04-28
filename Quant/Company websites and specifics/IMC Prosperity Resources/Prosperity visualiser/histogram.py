@@ -7,9 +7,9 @@ import numpy as np
 # 1. FILE PATHS & SETTINGS
 # Replace these with the actual paths to the CSVs you downloaded from Intara
 # =============================================================================
-PRICES_CSV_PATH = r'C:\Users\dkmid\OneDrive\Desktop\Quant\prosperity\R1\ROUND1\prices_round_1_day_0.csv'   # Usually contains: timestamp, product, bid_volume_1, ask_volume_1, etc.
-TRADES_CSV_PATH = r'C:\Users\dkmid\OneDrive\Desktop\Quant\prosperity\R1\ROUND1\trades_round_1_day_0.csv'   # Usually contains: timestamp, buyer, seller, product, price, quantity
-TARGET_PRODUCT = 'ASH_COATED_OSMIUM' # Change to INTARIAN_PEPPER_ROOT to analyze the other asset
+PRICES_CSV_PATH = r'C:\Users\dkmid\Downloads\ROUND_4\prices_round_4_day_1.csv'   # Usually contains: timestamp, product, bid_volume_1, ask_volume_1, etc.
+TRADES_CSV_PATH = r'C:\Users\dkmid\Downloads\ROUND_4\trades_round_4_day_1.csv'   # Usually contains: timestamp, buyer, seller, product, price, quantity
+TARGET_PRODUCT = 'HYDROGEL_PACK' # Change to INTARIAN_PEPPER_ROOT to analyze the other asset
 
 def plot_real_market_data(prices_file, trades_file, product):
     print(f"Loading data for {product}...")

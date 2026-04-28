@@ -209,8 +209,18 @@
               <label class="toggle-label"><input type="checkbox" id="show-bot-trades" checked><span class="toggle-switch"></span>Bot Trades (▲)</label>
             </div>
           </div>
+          <div class="control-group">
+            <label class="control-label">Trader Filter</label>
+            <div style="display:flex;gap:4px;width:100%;">
+              <select id="trader-select" class="select-input" style="flex:1;">
+                <option value="ALL">All Traders</option>
+              </select>
+              <button id="scan-traders-btn" class="btn btn-file" style="padding:0 8px;">Scan</button>
+            </div>
+            <div id="trader-pnl-display" style="font-size: 12px; color: var(--accent); margin-top: 6px; font-weight: bold;"></div>
+          </div>
           <!-- Trader buttons will be dynamically populated -->
-          <div id="trader-buttons" class="trader-buttons"></div>
+          <div id="trader-buttons" class="trader-buttons" style="display:none;"></div>
         </div>
       </div>
 

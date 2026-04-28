@@ -1,0 +1,1 @@
+There are mostly two aspects of competitive programming - problem solving/intuition, and DSA.

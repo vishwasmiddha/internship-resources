@@ -118,6 +118,15 @@ class ProsperityDashboard {
       });
     }
 
+    document.getElementById('trader-select')?.addEventListener('change', (e) => {
+      this.chart.setFilters({ selectedTrader: e.target.value });
+      this._calculateTraderPnL(e.target.value);
+    });
+
+    document.getElementById('scan-traders-btn')?.addEventListener('click', () => {
+      this._scanTraders();
+    });
+
     // Performance
     document.getElementById('ob-size')?.addEventListener('input', (e) => {
       this.chart.setFilters({ obSize: parseInt(e.target.value) });
@@ -232,6 +241,9 @@ class ProsperityDashboard {
 
     this.chart.setData(this.filteredData);
 
+    // Update trader dropdown automatically
+    this._scanTraders();
+
     // Update topbar
     const n = this.filteredData.prices.length;
     const nt = this.filteredData.trades.length;
@@ -256,6 +268,80 @@ class ProsperityDashboard {
       }
     } catch (err) {
       // non-fatal
+    }
+  }
+
+  _scanTraders() {
+    const traderSelect = document.getElementById('trader-select');
+    if (!traderSelect) return;
+    
+    const tradesToScan = this.rawTrades || (this.filteredData && this.filteredData.trades) || [];
+    const prevVal = traderSelect.value;
+    const traders = new Set();
+    for (const t of tradesToScan) {
+      if (t.buyer && t.buyer.trim() !== '') traders.add(t.buyer);
+      if (t.seller && t.seller.trim() !== '') traders.add(t.seller);
+    }
+    
+    traderSelect.innerHTML = '<option value="ALL">All Traders</option><option value="SUBMISSION">Myself (SUBMISSION)</option>';
+    const sorted = Array.from(traders).filter(x => x !== 'SUBMISSION').sort();
+    for (const b of sorted) {
+      const opt = document.createElement('option');
+      opt.value = b;
+      opt.textContent = b;
+      traderSelect.appendChild(opt);
+    }
+    
+    if (traders.has(prevVal) || prevVal === 'ALL' || prevVal === 'SUBMISSION') {
+      traderSelect.value = prevVal;
+    } else {
+      traderSelect.value = 'ALL';
+      this.chart.setFilters({ selectedTrader: 'ALL' });
+    }
+    
+    this._calculateTraderPnL(traderSelect.value);
+  }
+
+  _calculateTraderPnL(traderName) {
+    const el = document.getElementById('trader-pnl-display');
+    if (!el) return;
+    
+    if (!traderName || traderName === 'ALL') {
+      el.textContent = '';
+      return;
+    }
+    
+    // We only want trades for the selected product, which are in this.filteredData.trades
+    const trades = (this.filteredData && this.filteredData.trades) ? this.filteredData.trades : [];
+    let cash = 0;
+    let position = 0;
+    
+    for (const t of trades) {
+      if (t.buyer === traderName) {
+        cash -= t.price * t.quantity;
+        position += t.quantity;
+      }
+      if (t.seller === traderName) {
+        cash += t.price * t.quantity;
+        position -= t.quantity;
+      }
+    }
+    
+    // Evaluate open position using the last known mid price for this product
+    let finalMid = 0;
+    if (this.filteredData && this.filteredData.prices && this.filteredData.prices.length > 0) {
+      const lastPriceRow = this.filteredData.prices[this.filteredData.prices.length - 1];
+      finalMid = lastPriceRow.midPrice || 0;
+    }
+    
+    const pnl = cash + (position * finalMid);
+    
+    // Only display if the trader actually had trades for this product
+    if (position === 0 && cash === 0) {
+      el.textContent = `${traderName} has no trades for ${this.selectedProduct}`;
+    } else {
+      const sign = pnl > 0 ? '+' : '';
+      el.textContent = `${traderName} PnL: ${sign}${(Math.round(pnl * 10) / 10).toLocaleString()} (Pos: ${position})`;
     }
   }
 
