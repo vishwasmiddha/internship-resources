@@ -18,17 +18,25 @@ To make this resource easier to navigate, I’ve organized it into section-wise 
 
 \* Company-wise Resources
 
-
-
-If you are interested in Core, Consulting, or other verticals, feel free to reach out—we can work together to build guides for those as well.
+\* Internship Guide.pdf (refer for general advice, go through before you start your prep)
 
 
 
-Additionally, there is a senior's database
+If you are interested in Core, Consulting, Finance, or other tracks, feel free to reach out—we can work together to build guides for those as well.
+
+
+
+Additionally, there is a senior's database I'm preparing of MT1 seniors which will contain their internship, research internship, and other involvements. This will allow you to reach out to the seniors for company specific advice. I'm building this using purely publicly available data. If you have a problem regarding your name being in this database, mail me at vishwasmiddha24@gmail.com and I'll remove your name promptly.
 
 
 
 Each folder contains its own README file with specific guidance. Please refer to those for detailed information about the resources.
+
+
+
+For MT6 people I would like to add - keep a track of competitions coming up over the next year already and start preparing accordingly. Go through Quantfest, codefest, trade-a-thons, integral cup, imc prosperity etc. which happened in the current year and see how and when you need to prepare for them. These will be quite valuable to you guys. Also look out for CAIC Summer of Tech for exploring tech, it is quite fun.
+
+
 
 
 
@@ -49,4 +57,14 @@ One last thing - since I’m in the MT1 branch and my internship season is comin
 
 
 If done right, this kind of collective effort can significantly boost everyone’s progress over the summer.
+
+
+
+Special credits to Subham Goenka, Sagnik Baidya and seniors for contributing and making this possible.
+
+
+
+Extra Links:
+
+1. https://github.com/anirudhakulkarni/Placements-2024
 
