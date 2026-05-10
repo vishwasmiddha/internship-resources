@@ -58,6 +58,7 @@ You should stay on leetcode for DSA practice and on cf for CP. Try to manage bot
 6. [CF Battleground](https://www.cfbattleground.live/) for 1v1ing a friend on codeforces, fun
 7. [Awesome CP repo](https://github.com/lnishan/awesome-competitive-programming) Contains many miscellaneous links
 8. [ThemeCP](https://codeforces.com/blog/entry/136704) - If you can dedicatedly give a contest every day or every other day, you can take a look at this, but avoid if you don't plan to give that much time to CP alone.
+9. [CP31](https://www.tle-eliminators.com/cp-sheet) - recommended for beginner's for doing selective good questions
 
 
 
