@@ -75,7 +75,7 @@ Now you can move on to more diverse resources. What I am currently following is 
 
 You can also go through "Olympiad Combinatorics - Pranav Sriram" for combinatorics specific hard questions, but I wouldn't recommend spending too much time on it.
 
-I have found the quantprof.org 's Course on their website quite useful if you want all the relevant topics in the form of a roadmap, which are useful for quant prep. (Note that quantprof.org is technically a free resources, as you can ask for a refund within 30 days of purchase, you can do this multiple times if you cannot afford it)
+I have found the quantprof.org 's Course on their website quite useful if you want all the relevant topics in the form of a roadmap, which are useful for quant prep. ~~(Note that quantprof.org is technically a free resources, as you can ask for a refund within 30 days of purchase, you can do this multiple times if you cannot afford it)~~ (This is no longer true, you cannot ask for refunds for no reason now)
 
 This section concludes most of your quant puzzles preparation.
 
@@ -124,7 +124,7 @@ If you still have time, you can get some finance knowledge by going through [IIT
 
 Other resources include (for algorithmic trading too)
 [Python for Finance](https://www.sea-stat.com/wp-content/uploads/2021/05/Yves-Hilpisch-Python-for-Finance_-Mastering-Data-Driven-Finance-Book-OReilly-2018.pdf)
-[The Man Who solved the Market](https://s3.ap-south-1.amazonaws.com/storeassets.im-cdn.com/temp/cuploads/ap-south-1%2525252525253Acf57593f-4ea2-4a77-b6ca-efcb0544fad0/success--point/products/1597834756404The-Man-Who-Solved-The-Market.pdf)
+[The Man Who solved the Market](https://s3.ap-south-1.amazonaws.com/storeassets.im-cdn.com/temp/cuploads/ap-south-1%252525252525253Acf57593f-4ea2-4a77-b6ca-efcb0544fad0/success--point/products/1597834756404The-Man-Who-Solved-The-Market.pdf)
 
 Basic ideas of ETFs, futures, options is great to have. This is also helpful if you are doing the IMC Prosperity Challenge. You can mostly skip this part.
 
