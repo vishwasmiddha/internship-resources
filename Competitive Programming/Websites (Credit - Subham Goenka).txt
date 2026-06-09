@@ -5,3 +5,4 @@ https://usaco.guide/
 https://youkn0wwho.academy/topic-list
 https://cses.fi/book/book.pdf
 https://github.com/lnishan/awesome-competitive-programming
+https://codesmash.in/
