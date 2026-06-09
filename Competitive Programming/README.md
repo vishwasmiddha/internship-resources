@@ -10,6 +10,8 @@ You should try to give every single codeforces (and other websites such as leetc
 
 If you are a beginner, you can absolutely stick to the [CP Handbook](https://cses.fi/book/book.pdf) (or [USACO Guide](https://usaco.guide/)) for reference. It is the single best resource if you don't want to mess around with too many resources.
 
+**Important Link -** [Add to google calendars for reminders across many websites](https://calendar.google.com/calendar/ical/q1j1rmb3b3ad12g2qfph3b5k0rvp2ma9%40import.calendar.google.com/public/basic.ics)
+
 ## 
 
 ## **Priority Order**

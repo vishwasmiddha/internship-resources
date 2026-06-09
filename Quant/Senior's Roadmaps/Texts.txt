@@ -1,0 +1,42 @@
+here are the references mainly
+Your all have enough time, you can prep for both
+
+Software:
+cses: https://cses.fi/problemset/
+for c++ : https://www.learncpp.com/
+and start giving codeforces contest, even if u only solve 1 or 2 out of 5, its fine, give them anyways, you all have done dsa and daa, u already have a base, i'll share the cp references also
+
+
+
+Quant:
+here is 
+
+green book
+brainstellar
+
+a fun playlist (https://www.youtube.com/playlist?list=PLJicmE8fK0EiFRt1Hm5a_7SJFaikIFW30)
+
+2 websites i know of are https://www.puzzledquant.com/ and https://quantquestions.io/
+
+here are Jane street monthly puzzles (quite fun, but are hard and takes time) https://www.janestreet.com/puzzles/archive/
+
+
+Resources:
+1) quantquestions.io, quantquestions.com, puzzledquant.com, brainstellar.com, tradermath.org (important for optiver, da vinci) 
+2) Greenbook (xinfeng zhou), DAI and AIML course. See 2023 batch’s DAI slides
+
+And give the practice tests on campus.placements website. 
+
+General tips: They’ll ask questions like why quant, what do you expect, future goals, what do you like, what are you strong at, etc.. Pehle se hi prepare your answers for these
+
+Probability qns very important, need to be quick at probability, dice questions (practicing on quantquestions.com, etc.. websites will help a lot) Buy subscriptions on those websites by clubbing with friends, very worth it
+Three areas: 1) Puzzles, math olympiad qns, quant questions(the standard ones) 2) Linear algebra, statistics(regression analysis, R^2 stuff and their derivations), basic machine learning 3) Coding (basic python, OOPS kya hote, and basic c++, threading, concurrency, shared pointers and stuff (revise DSA labs and OS) and practice standard leetcode, codeforces qns
+So, i'm sharing the resources for intern prep
+These are not exhaustive, you can always ask for more, and obviously any amount might still be lacking at end.
+
+Mainly i've covered all things that are needed for building your intuition and get you more comfortable and ready for what the companies might throw on you during OAs and interviews
+
+just focus on completing these honestly, no need to rush, just doing 10 cp problems a day for next 2.5 months would be more than enough to cover your CP side
+and quant puzzles are quite fun tbh, so just get in flow and solve them (try to read them, understand, revise the basic theory before attempting a section of book, only after arriving at final answer should you all look at given answer, understand that all this is for building intuition and getting comfortable and not some target of doing x problems a day, so take your time, the start may be slow, its fine, pick pace slowly)
+
+about resume and interview, idts you need to prep a lot of that, just try a good project over summer if u don't already have 1-2 top projects which you would love to discuss and put on top of your resume. I think other main thing about interview would be, being introverted is completely fine, but it shouldn't result in you getting anxious during interview, i've seen people who could've gotten a better intern only cuz they were not as vocal (?), or express yourself better in interviewsh, so ig just being open to talking to people and being confident is enough, don't overthink, if u still think u might mess up interview even with all knowledge, dm me i'll share some books or videos ig

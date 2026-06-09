@@ -6,3 +6,4 @@ https://youkn0wwho.academy/topic-list
 https://cses.fi/book/book.pdf
 https://github.com/lnishan/awesome-competitive-programming
 https://codesmash.in/
+https://calendar.google.com/calendar/ical/q1j1rmb3b3ad12g2qfph3b5k0rvp2ma9%40import.calendar.google.com/public/basic.ics

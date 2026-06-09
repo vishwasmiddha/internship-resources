@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Probability Betting Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#021027;
+  --panel:#061937;
+  --panel-2:#08214a;
+  --panel-3:#0a285a;
+  --border:rgba(120,160,230,.16);
+  --border-soft:rgba(120,160,230,.10);
+  --text:#e9f0ff;
+  --muted:#8aa0cc;
+  --muted-2:#6c83b0;
+  --gold:#ffcf5c;
+  --gold-2:#f6b73c;
+  --green:#34d399;
+  --green-2:#10b981;
+  --green-bg:rgba(52,211,153,.12);
+  --red:#ff6b81;
+  --red-2:#f43f5e;
+  --red-bg:rgba(255,107,129,.12);
+  --blue:#4f9cff;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.7);
+  --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Roboto",system-ui,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  background-image:
+    radial-gradient(1100px 600px at 12% -8%, rgba(79,156,255,.16), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(255,207,92,.08), transparent 55%),
+    radial-gradient(1200px 800px at 50% 120%, rgba(16,185,129,.07), transparent 60%);
+  background-attachment:fixed;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.hidden{display:none !important}
+.app{max-width:1120px;margin:0 auto;padding:26px 18px 80px}
+.mono{font-family:"Roboto Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- buttons (pill) ---------- */
+.btn{
+  font-family:inherit;font-weight:700;font-size:15px;letter-spacing:.2px;
+  border:none;border-radius:999px;cursor:pointer;color:#04122c;
+  background:linear-gradient(180deg,var(--gold),var(--gold-2));
+  padding:13px 26px;transition:transform .12s ease, box-shadow .2s ease, filter .2s ease;
+  box-shadow:0 10px 24px -8px rgba(255,207,92,.5);
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.3);box-shadow:none}
+.btn.ghost{
+  background:transparent;color:var(--text);
+  border:1px solid var(--border);box-shadow:none;
+}
+.btn.ghost:hover{background:rgba(255,255,255,.04)}
+
+/* ---------- welcome ---------- */
+.welcome-screen{
+  background:var(--panel);
+  border:1px solid var(--border-soft);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:38px clamp(20px,4vw,46px);
+  margin-top:14px;
+  position:relative;overflow:hidden;
+}
+.welcome-screen::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(700px 320px at 85% -10%, rgba(79,156,255,.12), transparent 70%);
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin:0 0 14px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+h1.title{
+  font-size:clamp(34px,5.5vw,54px);line-height:1.02;margin:0 0 14px;
+  font-weight:900;letter-spacing:-.02em;
+}
+h1.title span{color:var(--gold)}
+.lede{color:var(--muted);font-size:16.5px;line-height:1.6;max-width:60ch;margin:0 0 26px}
+.lede strong{color:var(--text);font-weight:600}
+.rules{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 30px;
+}
+.rule{
+  background:var(--panel-2);border:1px solid var(--border-soft);border-radius:14px;padding:16px;
+}
+.rule h4{margin:0 0 6px;font-size:14px;color:var(--gold);font-weight:700;letter-spacing:.02em}
+.rule p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.55}
+
+.settings-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:18px 22px;margin-bottom:30px;
+}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.field .hint{font-size:11.5px;color:var(--muted-2)}
+select,input[type=number]{
+  font-family:inherit;font-size:15px;color:var(--text);
+  background:var(--bg);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;outline:none;transition:border-color .15s ease, box-shadow .15s ease;
+  appearance:none;-webkit-appearance:none;
+}
+select{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238aa0cc' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;
+}
+select:focus,input[type=number]:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,207,92,.16)}
+.toggle-row{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.toggle{
+  position:relative;width:46px;height:26px;border-radius:999px;background:var(--panel-3);
+  border:1px solid var(--border);transition:background .18s ease;flex:none;
+}
+.toggle::after{
+  content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+  background:var(--muted);transition:transform .18s ease, background .18s ease;
+}
+input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+input[type=checkbox]:checked + .toggle{background:rgba(52,211,153,.35);border-color:var(--green)}
+input[type=checkbox]:checked + .toggle::after{transform:translateX(20px);background:var(--green)}
+.welcome-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+
+/* ---------- topbar ---------- */
+.topbar{
+  display:flex;align-items:stretch;gap:14px;flex-wrap:wrap;margin-bottom:18px;
+}
+.stat-card{
+  background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--r);
+  padding:12px 18px;display:flex;flex-direction:column;gap:3px;min-width:120px;position:relative;
+}
+.stat-card .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);font-weight:700}
+.stat-card .v{font-size:24px;font-weight:800;line-height:1}
+.score-display{flex:2 1 220px;background:linear-gradient(180deg,var(--panel),#04173a);position:relative;overflow:visible}
+.score-display .v{color:var(--gold);font-size:30px;display:flex;align-items:baseline;gap:8px}
+.score-display .coin{font-size:15px;color:var(--gold-2)}
+#timer.low{color:var(--red)}
+.balance-highlight .v,.balance-highlight #balance{animation:pop .6s ease}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
+#balance-animation-container{position:absolute;right:18px;top:6px;pointer-events:none;z-index:5}
+.balance-change-animation{
+  position:absolute;right:0;font-family:"Roboto Mono",monospace;font-weight:700;font-size:18px;
+  animation:floatUp 1.5s ease-out forwards;white-space:nowrap;
+}
+.balance-increase{color:var(--green)}
+.balance-decrease{color:var(--red)}
+@keyframes floatUp{0%{opacity:0;transform:translateY(8px)}15%{opacity:1}100%{opacity:0;transform:translateY(-34px)}}
+
+/* ---------- special bets ---------- */
+.special-bets-panel{
+  background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--r);
+  padding:18px;margin-bottom:18px;
+}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.panel-head h3{margin:0;font-size:16px;font-weight:800;letter-spacing:.01em}
+.panel-head .sub{font-size:12.5px;color:var(--muted);max-width:54ch}
+.special-bet-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ---------- categories ---------- */
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+.category{
+  background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--r);
+  padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.category-header{display:flex;align-items:center;gap:12px;padding-bottom:6px;border-bottom:1px dashed var(--border-soft)}
+.category-title{margin:0;font-size:17px;font-weight:800;letter-spacing:.01em}
+.category-icon{display:flex;gap:6px;align-items:center}
+
+/* reveal chips */
+.header-die{
+  width:30px;height:30px;border-radius:8px;background:linear-gradient(180deg,#fff,#dbe6ff);
+  color:#08214a;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);transition:transform .4s cubic-bezier(.2,1.3,.4,1);
+}
+.header-card{perspective:600px}
+.header-card-inner{
+  width:24px;height:34px;border-radius:6px;background:#0c2350;border:1px solid var(--border);
+  color:var(--muted);font-weight:800;font-size:13px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1;transition:transform .4s cubic-bezier(.2,1.3,.4,1);
+}
+.header-card-inner.red{background:#fff5f6;color:var(--red-2);border-color:#ffd2da}
+.header-card-inner.black{background:#fff;color:#0b1530;border-color:#d7def0}
+.header-card-inner .card-value{font-size:12px;font-weight:900}
+.header-card-inner .card-suit{font-size:11px;margin-top:1px}
+.header-coin{
+  width:28px;height:28px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff0c2, #f6b73c 70%, #c98a16);
+  color:#5a3c06;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);transition:transform .4s cubic-bezier(.2,1.3,.4,1);
+}
+.result-revealed{transform:rotateY(360deg) scale(1.06)}
+.dice-icon .result-revealed,.coin-icon .result-revealed{transform:rotate(360deg) scale(1.08)}
+
+/* event tile */
+.events-list{display:flex;flex-direction:column;gap:10px}
+.event{
+  position:relative;background:var(--panel-2);border:1px solid var(--border-soft);border-radius:13px;
+  padding:13px 13px 12px;cursor:pointer;transition:border-color .15s ease, background .15s ease, transform .1s ease, box-shadow .2s ease;
+}
+.event:hover{border-color:var(--border);background:var(--panel-3)}
+.event:active{transform:scale(.995)}
+.odds-box{
+  position:absolute;top:11px;right:11px;background:rgba(79,156,255,.12);border:1px solid rgba(79,156,255,.3);
+  border-radius:9px;padding:5px 9px;text-align:center;min-width:54px;
+}
+.odds-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);font-weight:700}
+.odds-value{font-family:"Roboto Mono",monospace;font-size:14px;font-weight:700;color:#bcd6ff;line-height:1.1;margin-top:1px}
+.event-content{padding-right:74px;min-height:30px;display:flex;align-items:center}
+.event-description{font-size:13.5px;line-height:1.4;color:var(--text);font-weight:500}
+.event-description br{content:"";display:block;margin-top:1px}
+.event-actions{display:flex;align-items:center;gap:8px;margin-top:12px}
+.bet-input{
+  width:88px;padding:8px 10px;font-size:14px;font-family:"Roboto Mono",monospace;font-weight:600;
+  background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);
+}
+.bet-amount{font-size:12.5px;color:var(--muted);font-weight:600}
+.take-bet{
+  margin-left:auto;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;
+  border-radius:999px;padding:9px 18px;color:#04122c;background:linear-gradient(180deg,var(--gold),var(--gold-2));
+  transition:transform .1s ease, filter .15s ease;
+}
+.take-bet:hover{filter:brightness(1.05)}
+.event.selected{border-color:var(--gold);background:rgba(255,207,92,.08);box-shadow:0 0 0 1px var(--gold), 0 10px 26px -16px rgba(255,207,92,.7)}
+.event.selected .take-bet{background:transparent;color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.event.selected .take-bet::after{content:" ✓"}
+.event.success{border-color:var(--green);background:var(--green-bg);box-shadow:0 0 0 1px rgba(52,211,153,.5)}
+.event.failure{border-color:var(--red);background:var(--red-bg);box-shadow:0 0 0 1px rgba(255,107,129,.45)}
+
+/* round controls */
+.round-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px;flex-wrap:wrap}
+.resolving{display:none;align-items:center;gap:10px;color:var(--gold);font-weight:600;font-size:14px}
+.resolving.show{display:flex}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,207,92,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hint-text{color:var(--muted-2);font-size:12.5px;text-align:center;margin-top:8px}
+
+/* toast */
+#toast-wrap{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{
+  background:#0a285a;border:1px solid var(--red);color:#ffd9df;font-size:14px;font-weight:500;
+  padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);max-width:380px;
+  animation:toastIn .25s ease, toastOut .25s ease 3.5s forwards;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+
+/* ===================== RESULTS OVERVIEW ===================== */
+#results-screen{margin-top:10px}
+.results-head{text-align:center;margin-bottom:26px}
+.results-head h2{font-size:clamp(28px,4.5vw,40px);font-weight:900;margin:0 0 10px;letter-spacing:-.01em}
+.results-head .final{font-size:18px;color:var(--muted)}
+.results-head .final b{color:var(--gold);font-family:"Roboto Mono",monospace}
+.results-head .verdict{display:inline-block;margin-top:14px;padding:8px 20px;border-radius:999px;font-weight:700;font-size:14px}
+.verdict.win{background:var(--green-bg);color:var(--green);border:1px solid rgba(52,211,153,.4)}
+.verdict.loss{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,107,129,.4)}
+
+.questions-overview{display:flex;flex-direction:column;gap:26px}
+.questions-overview h3{font-size:1.15rem;font-weight:800;margin:6px 0 14px}
+.questions-overview h4{font-size:1.05rem;font-weight:800;margin:0 0 6px}
+.questions-overview h5{font-size:.95rem;font-weight:700;margin:0 0 10px;color:var(--gold)}
+
+.totals-card{background:var(--panel);border:1px solid var(--border-soft);border-radius:18px;overflow:hidden}
+.totals-header{background:linear-gradient(90deg,rgba(79,156,255,.16),transparent);padding:16px 20px;font-weight:800;font-size:15px;letter-spacing:.04em;border-bottom:1px solid var(--border-soft)}
+.totals-content{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border-soft)}
+.total-stat{background:var(--panel);padding:16px 14px;text-align:center}
+.total-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);font-weight:700;margin-bottom:6px}
+.total-value{font-size:22px;font-weight:800;font-family:"Roboto Mono",monospace}
+.total-value.positive{color:var(--green)}
+.total-value.negative{color:var(--red)}
+
+.performance-section,.opportunity-analysis,.bad-bet-analysis,.round-kelly-analysis,.kelly-explanation-box{
+  background:var(--panel);border:1px solid var(--border-soft);border-radius:18px;padding:20px 22px;
+}
+.analysis-description{color:var(--muted);font-size:13.5px;line-height:1.55;margin:0 0 16px}
+.analysis-description strong{color:var(--text)}
+.performance-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.category-card{background:var(--panel-2);border:1px solid var(--border-soft);border-radius:14px;padding:14px}
+.category-card .category-header{border:none;padding:0 0 10px;justify-content:space-between}
+.category-name{font-weight:800;font-size:15px}
+.win-rate{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px}
+.win-rate.high{background:var(--green-bg);color:var(--green)}
+.win-rate.medium{background:rgba(255,207,92,.14);color:var(--gold)}
+.win-rate.low{background:var(--red-bg);color:var(--red)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-cell{background:var(--bg);border-radius:9px;padding:9px;text-align:center}
+.stat-cell.span-full{grid-column:1/-1}
+.stat-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);font-weight:700}
+.stat-value{font-size:18px;font-weight:800;font-family:"Roboto Mono",monospace;margin-top:2px}
+.profit-indicator{text-align:center;font-size:13px;font-weight:700;padding:8px;border-radius:9px}
+.profit-indicator.positive{background:var(--green-bg);color:var(--green)}
+.profit-indicator.negative{background:var(--red-bg);color:var(--red)}
+.profit-indicator.neutral{background:rgba(138,160,204,.12);color:var(--muted)}
+
+.analysis-container{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.analysis-col h5{margin-bottom:10px}
+.analysis-placeholder{color:var(--muted-2);font-size:13px;font-style:italic;padding:8px 0}
+.analysis-item{background:var(--panel-2);border:1px solid var(--border-soft);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.analysis-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:11px 13px;font-size:13px}
+.analysis-item summary::-webkit-details-marker{display:none}
+.summary-arrow{font-size:9px;color:var(--muted);transition:transform .2s ease}
+.analysis-item[open] .summary-arrow{transform:rotate(90deg)}
+.analysis-label{font-weight:700;text-transform:capitalize}
+.analysis-value{margin-left:auto;font-weight:700;font-family:"Roboto Mono",monospace;font-size:12.5px;padding:3px 8px;border-radius:999px}
+.analysis-value.good{background:var(--green-bg);color:var(--green)}
+.analysis-value.medium{background:rgba(255,207,92,.14);color:var(--gold)}
+.analysis-value.poor{background:var(--red-bg);color:var(--red)}
+.analysis-details{padding:0 13px 12px;border-top:1px solid var(--border-soft)}
+.details-description{font-size:12px;color:var(--muted-2);margin:10px 0 8px}
+.bet-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.group-heading{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
+.list-separator{height:1px;background:var(--border-soft);margin:4px 0}
+.bet-item{background:var(--bg);border-radius:9px;padding:9px 11px}
+.bet-title-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
+.bet-title{margin:0;font-size:12.5px;font-weight:600;line-height:1.3}
+.bet-round{margin:0;font-size:11px;color:var(--muted-2);white-space:nowrap}
+.bet-details-info{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted)}
+.bet-details-info strong{color:var(--text);font-family:"Roboto Mono",monospace}
+.edge-positive strong{color:var(--green)}
+.edge-negative strong{color:var(--red)}
+
+.round-kelly-details{background:var(--panel-2);border:1px solid var(--border-soft);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.round-header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.round-header h4{margin:0;font-size:1rem}
+.round-balance{font-size:13px;color:var(--muted);font-family:"Roboto Mono",monospace}
+.events-container{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.events-container .category{background:var(--bg);padding:12px;gap:8px}
+.dice-events-results,.card-events-results,.coin-events-results{display:flex;flex-direction:column;gap:7px}
+.events-container .event{padding:9px 11px;cursor:default}
+.events-container .event .event-content{padding-right:0}
+.events-container .event-description{font-size:12px}
+.events-container .event-actions{margin-top:7px}
+.bet-result-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px}
+.bet-result-tag.win{background:var(--green-bg);color:var(--green)}
+.bet-result-tag.loss{background:var(--red-bg);color:var(--red)}
+.not-bet-tag{font-size:11px;color:var(--muted-2);font-weight:600}
+.event.opportunity-small,.event.opportunity-medium,.event.opportunity-large{border-style:dashed;border-color:rgba(52,211,153,.5)}
+.event.opportunity-large{border-color:var(--green);background:rgba(52,211,153,.07)}
+.event.bad-bet-small,.event.bad-bet-medium,.event.bad-bet-large{border-style:dashed;border-color:rgba(255,107,129,.45)}
+.event.bad-bet-large{border-color:var(--red);background:rgba(255,107,129,.07)}
+.events-container .bet-details-info{margin-top:6px;font-size:10.5px}
+.skipped-round-message{color:var(--muted-2);font-size:13px;font-style:italic;text-align:center;padding:8px}
+
+.kelly-analysis-section{margin-top:6px}
+.kelly-analysis-table,.kelly-formula{width:100%}
+.kelly-analysis-table{border-collapse:collapse;font-size:12.5px;margin-top:8px;overflow:hidden;border-radius:10px}
+.kelly-analysis-table th,.kelly-analysis-table td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border-soft)}
+.kelly-analysis-table thead th{background:var(--panel-3);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.kelly-analysis-table td{font-family:"Roboto Mono",monospace}
+.kelly-analysis-table td:first-child{font-family:"Roboto",sans-serif;color:var(--text)}
+.bet-quality-good{color:var(--green);font-weight:700}
+.bet-quality-overbet{color:var(--red);font-weight:700}
+.bet-quality-underbet{color:var(--gold);font-weight:700}
+.bet-quality-arbitrage{color:var(--blue);font-weight:700}
+.bet-quality-arbitrage-underutilized{color:var(--gold);font-weight:700}
+.bet-win{color:var(--green);font-weight:700}
+.bet-loss{color:var(--red);font-weight:700}
+
+.kelly-explanation-box p{color:var(--muted);font-size:13.5px;line-height:1.6}
+.kelly-explanation-box ul{color:var(--muted);font-size:13.5px;line-height:1.7;margin:8px 0;padding-left:20px}
+.kelly-explanation-box strong{color:var(--text)}
+.kelly-formula{text-align:center;font-family:"Roboto Mono",monospace;font-size:18px;color:var(--gold);background:var(--bg);padding:14px;border-radius:10px;margin:12px 0}
+.kelly-example{background:var(--panel-2);border-radius:10px;padding:12px 14px;font-size:13px}
+
+.leaderboard-link{text-decoration:none;display:inline-block}
+.leaderboard-card{display:flex;align-items:center;gap:16px;background:linear-gradient(90deg,rgba(255,207,92,.14),var(--panel));border:1px solid rgba(255,207,92,.3);border-radius:16px;padding:18px 26px;transition:transform .12s ease}
+.leaderboard-card:hover{transform:translateY(-2px)}
+.trophy-emoji{font-size:34px}
+.leaderboard-content{text-align:left}
+.leaderboard-title{margin:0;font-size:17px;color:var(--gold)}
+.leaderboard-subtitle{margin:3px 0 0;font-size:13px;color:var(--muted)}
+
+/* ---------- responsive ---------- */
+@media (max-width:920px){
+  .categories{grid-template-columns:1fr}
+  .totals-content{grid-template-columns:repeat(4,1fr)}
+  .performance-grid{grid-template-columns:repeat(2,1fr)}
+  .analysis-container{grid-template-columns:1fr}
+  .events-container{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .app{padding:18px 13px 70px}
+  .settings-grid{grid-template-columns:1fr}
+  .rules{grid-template-columns:1fr}
+  .special-bet-row{grid-template-columns:1fr}
+  .totals-content{grid-template-columns:repeat(2,1fr)}
+  .performance-grid{grid-template-columns:1fr}
+  .topbar .stat-card{flex:1 1 calc(50% - 7px);min-width:0}
+}
+</style>
+</head>
+<body>
+<div id="toast-wrap"></div>
+<div class="app">
+
+  <!-- ===================== WELCOME ===================== -->
+  <section id="welcome-screen-wrap">
+    <div class="welcome-screen">
+      <p class="eyebrow"><span class="dot"></span> Expected Value · Bankroll Management</p>
+      <h1 class="title">Probability <span>Betting</span></h1>
+      <p class="lede">Each round, the house offers bets on <strong>dice</strong>, <strong>cards</strong> and <strong>coins</strong> at posted odds. Some odds are <strong>better than fair</strong> (a positive-EV edge worth taking); others are <strong>traps</strong> priced worse than the true probability. Start with <strong>1,000 coins</strong>, find the edges, size your stakes, and grow your bankroll before the clock runs out.</p>
+
+      <div class="rules">
+        <div class="rule"><h4>Read the odds</h4><p>Posted odds are <span class="mono">X:1</span>. Compare them to the fair odds <span class="mono">(1−p)/p</span> implied by each event's real probability.</p></div>
+        <div class="rule"><h4>Take the edge</h4><p>Bet when offered odds beat fair odds. Pass — or fade with a Put bet — when they don't.</p></div>
+        <div class="rule"><h4>Size with Kelly</h4><p>Your post-game report grades every stake against the Kelly-optimal bet for the edge you had.</p></div>
+      </div>
+
+      <div class="settings-grid">
+        <div class="field">
+          <label for="quiz-duration">Game length</label>
+          <select id="quiz-duration">
+            <option value="180">3 minutes · target 1,300</option>
+            <option value="300" selected>5 minutes · target 1,800</option>
+            <option value="600">10 minutes · target 3,000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="events-per-category">Events per category</label>
+          <select id="events-per-category">
+            <option value="1">1 (focused)</option>
+            <option value="2" selected>2 (default)</option>
+            <option value="3">3</option>
+            <option value="4">4 (busy)</option>
+          </select>
+          <span class="hint">How many betting lines appear per category each round.</span>
+        </div>
+        <div class="field">
+          <label for="ace-value">Ace value (cards)</label>
+          <select id="ace-value">
+            <option value="14" selected>14 — Ace high</option>
+            <option value="1">1 — Ace low</option>
+          </select>
+          <span class="hint">Affects sums, averages and sequences.</span>
+        </div>
+        <div class="field">
+          <label for="bet-type">Bet amount type</label>
+          <select id="bet-type">
+            <option value="variable" selected>Variable — choose each stake</option>
+            <option value="fixed">Fixed — same stake every bet</option>
+          </select>
+        </div>
+        <div class="field" id="fixed-bet-container">
+          <label for="fixed-bet-amount">Fixed stake (coins)</label>
+          <input type="number" id="fixed-bet-amount" value="10" min="1" />
+        </div>
+        <div class="field">
+          <label>Animation</label>
+          <label class="toggle-row">
+            <input type="checkbox" id="skipAnimationToggle" />
+            <span class="toggle"></span>
+            <span style="font-size:14px;color:var(--text)">Skip reveal animation</span>
+          </label>
+          <span class="hint">Settle rounds instantly with no dice/card/coin reveal.</span>
+        </div>
+      </div>
+
+      <div class="welcome-actions">
+        <button class="btn" id="start-quiz">Start with 1,000 coins →</button>
+        <span style="font-size:13px;color:var(--muted-2)">Press Enter during a round to settle it.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME ===================== -->
+  <section id="game-screen" class="hidden">
+    <div class="topbar">
+      <div class="stat-card score-display">
+        <span class="k">Bankroll</span>
+        <span class="v"><span id="balance">1000</span><span class="coin">coins</span></span>
+        <div id="balance-animation-container"></div>
+      </div>
+      <div class="stat-card"><span class="k">Round</span><span class="v mono" id="round-number">1</span></div>
+      <div class="stat-card"><span class="k">Time left</span><span class="v mono" id="timer">5:00</span></div>
+      <div class="stat-card"><span class="k">Target</span><span class="v mono" id="target-display">1800</span></div>
+    </div>
+
+    <div class="special-bets-panel" id="special-bets">
+      <div class="panel-head">
+        <h3>⚡ Special bets</h3>
+        <span class="sub">Meta-bets on your own round. Settled after all regular bets resolve.</span>
+      </div>
+      <div class="special-bet-row">
+        <div class="event" data-category="special" data-event-id="put_bet">
+          <div class="event-content"><div class="event-description"><strong>Put</strong> — Win if total profit from all your other bets is <em>negative</em></div></div>
+          <div class="odds-box"><div class="odds-label">Odds</div><div class="odds-value" id="put-odds-value">1:1</div></div>
+          <div class="event-actions"></div>
+        </div>
+        <div class="event" data-category="special" data-event-id="call_bet">
+          <div class="event-content"><div class="event-description"><strong>Call</strong> — Win if total profit from all your other bets is <em>positive</em></div></div>
+          <div class="odds-box"><div class="odds-label">Odds</div><div class="odds-value" id="call-odds-value">1:1</div></div>
+          <div class="event-actions"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="categories">
+      <div class="category">
+        <div class="category-header">
+          <div class="category-icon dice-icon">
+            <div class="header-die"><span>?</span></div>
+            <div class="header-die"><span>?</span></div>
+          </div>
+          <h3 class="category-title">Dice</h3>
+        </div>
+        <div class="events-list" id="dice-events"></div>
+      </div>
+
+      <div class="category">
+        <div class="category-header">
+          <div class="category-icon card-icon">
+            <div class="header-card"><div class="header-card-inner">?</div></div>
+            <div class="header-card"><div class="header-card-inner">?</div></div>
+          </div>
+          <h3 class="category-title">Cards</h3>
+        </div>
+        <div class="events-list" id="card-events"></div>
+      </div>
+
+      <div class="category">
+        <div class="category-header">
+          <div class="category-icon coin-icon">
+            <div class="header-coin">?</div>
+            <div class="header-coin">?</div>
+            <div class="header-coin">?</div>
+          </div>
+          <h3 class="category-title">Coins</h3>
+        </div>
+        <div class="events-list" id="coin-events"></div>
+      </div>
+    </div>
+
+    <div class="round-controls">
+      <button class="btn" id="next-round">Settle round →</button>
+      <div class="resolving" id="resolving"><span class="spinner"></span> Resolving bets…</div>
+    </div>
+    <p class="hint-text">Tap a line (or “Take”) to back it. Selected bets glow gold. Settle when ready — unselected lines cost nothing.</p>
+
+    <!-- elements referenced by the engine's reveal system (kept off-screen / inline above) -->
+    <div class="hidden">
+      <div id="results-title"></div><div id="results-animation"></div>
+      <div id="dice-result"></div><div id="cards-result"></div><div id="coins-result"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTS ===================== -->
+  <section id="results-screen" class="hidden">
+    <div class="results-head">
+      <h2 id="results-headline">Game Over</h2>
+      <div class="final">You finished with <b><span id="final-balance">0</span> coins</b></div>
+      <div id="verdict-pill"></div>
+    </div>
+    <div id="questions-overview"></div>
+    <div style="display:flex;justify-content:center;margin-top:30px">
+      <button class="btn" id="play-again">Play again ↻</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   In-memory settings store (artifact sandbox: no localStorage)
+   ============================================================ */
+const store = {
+  _d:{},
+  getItem(k){ return Object.prototype.hasOwnProperty.call(this._d,k) ? this._d[k] : null; },
+  setItem(k,v){ this._d[k] = String(v); }
+};
+try { if (history.scrollRestoration) history.scrollRestoration = "manual"; } catch(e){}
+
+/* lightweight toast replacing alert() (alerts are unreliable in sandboxed iframes) */
+function notify(msg){
+  const wrap = document.getElementById("toast-wrap");
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ if (t.parentNode) t.remove(); }, 4000);
+}
+
+/* ============================================================
+   Balance change animation (ported)
+   ============================================================ */
+class BalanceAnimationSystem {
+  constructor(){
+    this.container = document.getElementById("balance-animation-container");
+    if (!this.container){
+      this.container = document.createElement("div");
+      this.container.id = "balance-animation-container";
+      const scoreDisplay = document.querySelector(".score-display");
+      if (scoreDisplay) scoreDisplay.appendChild(this.container);
+    }
+    this.balanceDisplay = document.getElementById("balance");
+    this.previousBalance = parseInt(this.balanceDisplay.textContent,10) || 1000;
+  }
+  animateBalanceChange(newBalance){
+    const currentBalance = this.previousBalance;
+    const difference = newBalance - currentBalance;
+    if (difference === 0) return;
+    const el = document.createElement("div");
+    el.classList.add("balance-change-animation");
+    if (difference > 0){ el.classList.add("balance-increase"); el.textContent = "+" + difference; }
+    else { el.classList.add("balance-decrease"); el.textContent = String(difference); }
+    this.container.appendChild(el);
+    setTimeout(()=>{ if (el.parentNode) el.remove(); }, 1500);
+    this.previousBalance = newBalance;
+  }
+}
+
+/* ============================================================
+   Minimal BaseQuiz scaffolding (replaces the WordPress base
+   class the original engine extended: screens, timer, score,
+   start/end flow, results injection).
+   ============================================================ */
+class BaseQuiz {
+  constructor(config){
+    this.config = config || {};
+    this.elements = {};
+    this.score = 0;
+    this.timeLeft = 0;
+    this._timerId = null;
+    this._ended = false;
+  }
+  get quizDuration(){
+    const sel = document.getElementById("quiz-duration");
+    return sel ? parseInt(sel.value,10) : 300;
+  }
+  initializeElements(){
+    this.elements.startButton    = document.getElementById("start-quiz");
+    this.elements.welcomeWrap    = document.getElementById("welcome-screen-wrap");
+    this.elements.gameScreen     = document.getElementById("game-screen");
+    this.elements.resultsScreen  = document.getElementById("results-screen");
+    this.elements.timerDisplay   = document.getElementById("timer");
+    this.elements.targetDisplay  = document.getElementById("target-display");
+    this.elements.questionsOverview = document.getElementById("questions-overview");
+    this.elements.headline       = document.getElementById("results-headline");
+    this.elements.verdictPill    = document.getElementById("verdict-pill");
+    this.elements.playAgain      = document.getElementById("play-again");
+  }
+  bindEvents(){
+    if (this.elements.startButton)
+      this.elements.startButton.addEventListener("click", ()=> this.startQuiz());
+    if (this.elements.playAgain)
+      this.elements.playAgain.addEventListener("click", ()=> this.restart());
+  }
+  async startQuiz(){
+    this._ended = false;
+    this.elements.welcomeWrap.classList.add("hidden");
+    this.elements.resultsScreen.classList.add("hidden");
+    this.elements.gameScreen.classList.remove("hidden");
+    if (this.elements.targetDisplay)
+      this.elements.targetDisplay.textContent = this.settings.targetScore;
+    this.startTimer();
+  }
+  startTimer(){
+    if (this._timerId) clearInterval(this._timerId);
+    this.updateTimerDisplay();
+    this._timerId = setInterval(()=>{
+      this.timeLeft--;
+      this.updateTimerDisplay();
+      if (this.timeLeft <= 0){
+        clearInterval(this._timerId);
+        this._timerId = null;
+        this.endQuiz();
+      }
+    }, 1000);
+  }
+  updateTimerDisplay(){
+    if (!this.elements.timerDisplay) return;
+    const t = Math.max(0, this.timeLeft);
+    const m = Math.floor(t/60), s = t%60;
+    this.elements.timerDisplay.textContent = m + ":" + String(s).padStart(2,"0");
+    this.elements.timerDisplay.classList.toggle("low", t <= 30);
+  }
+  updateScore(){ /* bankroll is the score; balance display handled separately */ }
+  async endQuiz(){
+    if (this._ended) return;
+    this._ended = true;
+    this.isGameRunning = false;
+    this.isRoundActive = false;
+    if (this._timerId){ clearInterval(this._timerId); this._timerId = null; }
+
+    const finalScore = this.calculateFinalScore();
+    const finalEl = document.getElementById("final-balance");
+    if (finalEl) finalEl.textContent = finalScore;
+
+    const beat = finalScore >= this.settings.targetScore;
+    if (this.elements.headline)
+      this.elements.headline.textContent = beat ? "Target Reached! 🎉" : "Game Over";
+    if (this.elements.verdictPill){
+      const profit = finalScore - this.gameConfig.STARTING_BALANCE;
+      this.elements.verdictPill.className = "verdict " + (profit >= 0 ? "win" : "loss");
+      this.elements.verdictPill.textContent =
+        (profit >= 0 ? "Net profit +" : "Net loss ") + profit + " coins"
+        + (beat ? "  ·  target cleared" : "  ·  target " + this.settings.targetScore);
+    }
+
+    try { this.elements.questionsOverview.innerHTML = this.generateQuestionsOverview(); }
+    catch(err){ console.error(err); this.elements.questionsOverview.innerHTML =
+      '<div class="totals-card"><div class="totals-header">Summary unavailable</div></div>'; }
+
+    this.elements.gameScreen.classList.add("hidden");
+    this.elements.resultsScreen.classList.remove("hidden");
+    window.scrollTo(0,0);
+  }
+}
+
+/* ============================================================
+   ProbabilityBettingGame — faithful port of the engine.
+   All events, fair-odds probabilities, settlement math, edge,
+   Kelly analysis, special bets and opportunity tracking are
+   reproduced exactly from the source.
+   ============================================================ */
+class ProbabilityBettingGame extends BaseQuiz {
+  constructor(config){
+    const skipAnimationKey   = `quizSkipAnimation_${config.type}`;
+    const eventsPerCategoryKey = `quizEventsPerCategory_${config.type}`;
+    const aceValueKey        = `quizAceValue_${config.type}`;
+    const betTypeKey         = `quizBetType_${config.type}`;
+    const fixedBetAmountKey  = `quizFixedBetAmount_${config.type}`;
+    const skipAnimation = store.getItem(skipAnimationKey) === "true";
+    const eventsPerCategory = store.getItem(eventsPerCategoryKey) || "2";
+    const aceValue = store.getItem(aceValueKey) || "14";
+    const betType = store.getItem(betTypeKey) || "variable";
+    const fixedBetAmount = store.getItem(fixedBetAmountKey) || "10";
+    super(config);
+    this.storageKeys = { skipAnimation:skipAnimationKey, eventsPerCategory:eventsPerCategoryKey, aceValue:aceValueKey, betType:betTypeKey, fixedBetAmount:fixedBetAmountKey };
+    this.gameConfig = {
+      STARTING_BALANCE: 1000,
+      DEFAULT_BET_AMOUNT: 10,
+      ANIMATION_DURATION: 4000,
+      EVENT_TYPES: {
+        DICE: { id:"dice", name:"Dice", events:[
+          {id:"dice_sum_gt_7",description:"Sum of dice is greater than 7"},
+          {id:"dice_sum_lt_7",description:"Sum of dice is less than 7"},
+          {id:"dice_sum_eq_7",description:"Sum of dice is exactly 7"},
+          {id:"dice_one_gt_4",description:"At least one die is 5 or higher"},
+          {id:"dice_both_even",description:"Both dice show even numbers"},
+          {id:"dice_both_odd",description:"Both dice show odd numbers"},
+          {id:"dice_doubles",description:"Both dice show the same number"},
+          {id:"dice_one_eq_6",description:"At least one die shows a 6"},
+          {id:"dice_sum_even",description:"Sum of dice is an even number"},
+          {id:"dice_sum_odd",description:"Sum of dice is an odd number"},
+          {id:"dice_sum_prime",description:"Sum of dice is a prime number <br>(2,3,5,7,11)"},
+          {id:"dice_product_gt_20",description:"Product of dice is greater than 20"},
+          {id:"dice_one_eq_1",description:"At least one die shows a 1"},
+          {id:"dice_consecutive",description:"Dice show consecutive numbers"},
+          {id:"dice_one_vs_two",description:"First die is higher than second die"},
+          {id:"dice_both_lt_3",description:"Both dice show less than 3"}
+        ]},
+        CARDS: { id:"cards", name:"Cards", events:[
+          {id:"cards_none_red",description:"If I draw 2 cards, none of them is red"},
+          {id:"cards_all_red",description:"If I draw 2 cards, both are red"},
+          {id:"cards_one_face",description:"If I draw 2 cards, at least one is a face card <br>(J,Q,K)"},
+          {id:"cards_sum_gt_20",description:"If I draw 2 cards, their values sum to more than 20"},
+          {id:"cards_sum_lt_10",description:"If I draw 2 cards, their values sum to less than 10"},
+          {id:"cards_one_ace",description:"If I draw 2 cards, at least one is an Ace"},
+          {id:"cards_same_suit",description:"If I draw 2 cards, they are the same suit"},
+          {id:"cards_same_value",description:"If I draw 2 cards, they have the same value"},
+          {id:"cards_royal_face",description:"Draw at least one royal face card <br>(J,Q,K of hearts or spades)"},
+          {id:"cards_sequential",description:"Cards are in sequence <br>(like 5,6 or Q,K)"},
+          {id:"cards_both_black",description:"Both cards are black suits <br>(clubs or spades)"},
+          {id:"cards_sum_prime",description:"Sum of card values is a prime number"},
+          {id:"cards_both_face",description:"Both cards are face cards <br>(J,Q,K)"},
+          {id:"cards_both_number",description:"Both cards are number cards <br>(2-10)"},
+          {id:"cards_avg_gt_8",description:"Average value of cards is greater than 8"},
+          {id:"cards_both_even",description:"Both cards have even values <br>(including face cards)"}
+        ]},
+        COINS: { id:"coins", name:"Coins", events:[
+          {id:"coins_one_heads",description:"At least one coin shows heads"},
+          {id:"coins_all_heads",description:"All 3 coins show heads"},
+          {id:"coins_all_tails",description:"All 3 coins show tails"},
+          {id:"coins_majority_heads",description:"More coins show heads than tails"},
+          {id:"coins_exactly_two_heads",description:"Exactly 2 coins show heads"},
+          {id:"coins_exactly_one_tails",description:"Exactly 1 coin shows tails"},
+          {id:"coins_alternating",description:"Coins alternate between heads and tails"},
+          {id:"coins_first_heads",description:"First coin shows heads"},
+          {id:"coins_last_tails",description:"Last coin shows tails"},
+          {id:"coins_same_as_first",description:"All coins match the first coin"},
+          {id:"coins_not_two_tails",description:"Coins do not show exactly 2 tails"},
+          {id:"coins_even_heads",description:"An even number of coins show heads <br>(0 or 2)"}
+        ]}
+      }
+    };
+    this.balance = this.gameConfig.STARTING_BALANCE;
+    this.isGameRunning = false;
+    this.isRoundActive = false;
+    this.fixedBetAmount = this.gameConfig.DEFAULT_BET_AMOUNT;
+    this.eventGenerators = { dice:null, cards:null, coins:null };
+    this.currentEvents = { dice:[], cards:[], coins:[] };
+    this.specialBets = { put:{odds:1,fairOdds:1,variation:0}, call:{odds:1,fairOdds:1,variation:0} };
+    this.selectedBets = [];
+    this.gameHistory = [];
+    this.opportunityStats = this.makeEmptyOpportunityStats();
+    this.negativeStats = this.makeEmptyNegativeStats();
+    this.roundNumber = 1;
+    this.settings = { timeLimit:300, targetScore:1800, eventsPerCategory, aceValue, betType, skipAnimation };
+    this.initializeElements();
+    this.initializeEventGenerators();
+    this.initializeFormControls();
+    super.bindEvents();
+    this.bindExtraEvents();
+    this.showLiveScore = true;
+  }
+
+  initializeFormControls(){
+    const a = document.getElementById("skipAnimationToggle"); if (a) a.checked = this.settings.skipAnimation;
+    const b = document.getElementById("events-per-category"); if (b) b.value = this.settings.eventsPerCategory.toString();
+    const c = document.getElementById("ace-value"); if (c) c.value = this.settings.aceValue.toString();
+    const d = document.getElementById("bet-type"); if (d){ d.value = this.settings.betType; this.toggleFixedBetInput(); }
+    const e = document.getElementById("fixed-bet-amount"); if (e) e.value = this.fixedBetAmount.toString();
+  }
+
+  initializeElements(){
+    super.initializeElements();
+    Object.assign(this.elements, {
+      welcomeScreen: document.querySelector(".welcome-screen"),
+      balanceDisplay: document.getElementById("balance"),
+      roundNumberDisplay: document.getElementById("round-number"),
+      finalBalanceDisplay: document.getElementById("final-balance"),
+      diceEvents: document.getElementById("dice-events"),
+      cardEvents: document.getElementById("card-events"),
+      coinEvents: document.getElementById("coin-events"),
+      specialBets: document.getElementById("special-bets"),
+      nextRoundButton: document.getElementById("next-round"),
+      fixedBetContainer: document.getElementById("fixed-bet-container"),
+      fixedBetAmountInput: document.getElementById("fixed-bet-amount"),
+      skipAnimationToggle: document.getElementById("skipAnimationToggle"),
+      eventsPerCategorySelect: document.getElementById("events-per-category"),
+      aceValueSelect: document.getElementById("ace-value"),
+      betTypeSelect: document.getElementById("bet-type"),
+      resolving: document.getElementById("resolving")
+    });
+  }
+
+  bindExtraEvents(){
+    this.elements.nextRoundButton.addEventListener("click", ()=> this.nextRound());
+    if (this.elements.betTypeSelect){
+      this.elements.betTypeSelect.addEventListener("change", e=>{
+        this.settings.betType = e.target.value;
+        store.setItem(this.storageKeys.betType, this.settings.betType);
+        this.toggleFixedBetInput();
+      });
+    }
+    if (this.elements.eventsPerCategorySelect){
+      this.elements.eventsPerCategorySelect.addEventListener("change", e=>{
+        this.settings.eventsPerCategory = parseInt(e.target.value);
+        store.setItem(this.storageKeys.eventsPerCategory, e.target.value);
+      });
+    }
+    if (this.elements.aceValueSelect){
+      this.elements.aceValueSelect.addEventListener("change", e=>{
+        this.settings.aceValue = parseInt(e.target.value);
+        store.setItem(this.storageKeys.aceValue, e.target.value);
+      });
+    }
+    if (this.elements.fixedBetAmountInput){
+      this.elements.fixedBetAmountInput.addEventListener("change", e=>{
+        this.fixedBetAmount = parseInt(e.target.value);
+        store.setItem(this.storageKeys.fixedBetAmount, e.target.value);
+        if (this.settings.betType === "fixed") this.initializeSpecialBetsHandlers();
+      });
+    }
+    if (this.elements.skipAnimationToggle){
+      this.elements.skipAnimationToggle.addEventListener("change", e=>{
+        this.settings.skipAnimation = e.target.checked;
+        store.setItem(this.storageKeys.skipAnimation, this.settings.skipAnimation);
+      });
+    }
+    document.addEventListener("keydown", event=>{
+      if (event.key === "Enter" && this.isGameRunning && this.isRoundActive){
+        if (!this.elements.nextRoundButton.disabled) this.elements.nextRoundButton.click();
+      }
+    });
+  }
+
+  toggleFixedBetInput(){
+    if (this.elements.betTypeSelect.value === "fixed") this.elements.fixedBetContainer.classList.remove("hidden");
+    else this.elements.fixedBetContainer.classList.add("hidden");
+    this.initializeSpecialBetsHandlers();
+  }
+
+  updateRoundNumberDisplay(){
+    if (this.elements.roundNumberDisplay) this.elements.roundNumberDisplay.textContent = this.roundNumber;
+  }
+
+  async startQuiz(){
+    const timeValue = this.quizDuration;
+    if (timeValue){
+      this.settings.timeLimit = timeValue;
+      if (this.config && this.config.passingScores && this.config.passingScores[timeValue])
+        this.settings.targetScore = this.config.passingScores[timeValue];
+    }
+    this.settings.eventsPerCategory = parseInt(document.getElementById("events-per-category").value);
+    this.settings.aceValue = parseInt(document.getElementById("ace-value").value);
+    this.settings.betType = document.getElementById("bet-type").value;
+    this.fixedBetAmount = parseInt(this.elements.fixedBetAmountInput.value);
+    if (this.settings.betType === "fixed") this.settings.fixedBetAmount = this.fixedBetAmount;
+    this.balance = this.gameConfig.STARTING_BALANCE;
+    this.timeLeft = this.settings.timeLimit;
+    this.isGameRunning = true;
+    this.isRoundActive = true;
+    this.gameHistory = [];
+    this.roundNumber = 1;
+    this.opportunityStats = this.makeEmptyOpportunityStats();
+    this.negativeStats = this.makeEmptyNegativeStats();
+    if (this.elements.balanceDisplay) this.elements.balanceDisplay.textContent = this.balance;
+    window.balanceAnimator = new BalanceAnimationSystem();
+    await super.startQuiz();
+    this.updateBalanceDisplay();
+    this.updateRoundNumberDisplay();
+    this.generateEvents();
+  }
+
+  showQuestion(){}
+  calculateFinalScore(){ return this.balance; }
+
+  updateBalanceDisplay(){
+    if (this.elements.balanceDisplay){
+      const oldBalance = parseInt(this.elements.balanceDisplay.textContent);
+      const newBalance = this.balance;
+      if (oldBalance !== newBalance){
+        if (!window.balanceAnimator) window.balanceAnimator = new BalanceAnimationSystem();
+        window.balanceAnimator.animateBalanceChange(newBalance);
+        const card = this.elements.balanceDisplay.closest(".score-display") || this.elements.balanceDisplay;
+        if (newBalance > oldBalance) card.classList.add("balance-highlight");
+        else card.classList.add("balance-highlight","negative");
+        setTimeout(()=> card.classList.remove("balance-highlight","negative"), 600);
+      }
+      this.elements.balanceDisplay.textContent = newBalance;
+    }
+  }
+
+  initializeEventGenerators(){
+    this.eventGenerators.dice = this.createDiceEventGenerator();
+    this.eventGenerators.cards = this.createCardEventGenerator();
+    this.eventGenerators.coins = this.createCoinEventGenerator();
+    this.eventGenerators.special = this.createSpecialBetEventGenerator();
+  }
+
+  /* ---- shared odds-variation routine (matches engine) ---- */
+  _buildEvents(allSrc, fairFn){
+    const allEvents = [...allSrc];
+    const selected = [];
+    const count = this.settings.eventsPerCategory;
+    for (let i=0; i<count && allEvents.length>0; i++){
+      const event = allEvents.splice(Math.floor(Math.random()*allEvents.length),1)[0];
+      const fairOdds = fairFn(event.id);
+      const isFair = Math.random() < .5;
+      let odds, variation = 0;
+      if (isFair){ odds = fairOdds; }
+      else {
+        variation = Math.random()*.6 - .3;
+        if (variation < 0) variation = Math.min(-.1, variation);
+        else variation = Math.max(.1, variation);
+        odds = fairOdds * (1 + variation);
+      }
+      let opportunity = null, badBet = null;
+      if (variation > 0) opportunity = variation <= .1 ? "small" : variation <= .2 ? "medium" : "large";
+      else if (variation < 0) badBet = Math.abs(variation) <= .1 ? "small" : Math.abs(variation) <= .2 ? "medium" : "large";
+      selected.push({ ...event, odds:+odds.toFixed(2), fairOdds, variation, opportunity, badBet });
+    }
+    return selected;
+  }
+
+  createDiceEventGenerator(){
+    return {
+      generateEvents: () => this._buildEvents(this.gameConfig.EVENT_TYPES.DICE.events, id=>this.calculateDiceFairOdds(id)),
+      generateResults: () => [Math.floor(Math.random()*6)+1, Math.floor(Math.random()*6)+1],
+      evaluateEvent: (eventId, r) => {
+        const die1=r[0], die2=r[1], sum=die1+die2, product=die1*die2;
+        const isPrime = this._isPrime;
+        switch(eventId){
+          case "dice_sum_gt_7": return sum>7;
+          case "dice_sum_lt_7": return sum<7;
+          case "dice_sum_eq_7": return sum===7;
+          case "dice_one_gt_4": return die1>=5||die2>=5;
+          case "dice_both_even": return die1%2===0&&die2%2===0;
+          case "dice_both_odd": return die1%2===1&&die2%2===1;
+          case "dice_doubles": return die1===die2;
+          case "dice_one_eq_6": return die1===6||die2===6;
+          case "dice_sum_even": return sum%2===0;
+          case "dice_sum_odd": return sum%2===1;
+          case "dice_sum_prime": return isPrime(sum);
+          case "dice_product_gt_20": return product>20;
+          case "dice_one_eq_1": return die1===1||die2===1;
+          case "dice_consecutive": return Math.abs(die1-die2)===1;
+          case "dice_one_vs_two": return die1>die2;
+          case "dice_both_lt_3": return die1<3&&die2<3;
+          default: return false;
+        }
+      }
+    };
+  }
+
+  createCardEventGenerator(){
+    return {
+      generateEvents: () => this._buildEvents(this.gameConfig.EVENT_TYPES.CARDS.events, id=>this.calculateCardFairOdds(id)),
+      generateResults: () => {
+        const suits=["hearts","diamonds","clubs","spades"];
+        const values=["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+        const deck=[];
+        suits.forEach(suit=>values.forEach(value=>deck.push({suit,value,isRed:["hearts","diamonds"].includes(suit)})));
+        for (let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+        return [deck[0], deck[1]];
+      },
+      evaluateEvent: (eventId, cardResults) => {
+        const aceValue = this.settings.aceValue;
+        const cardValues = cardResults.map(card=>{
+          if (card.value==="A") return aceValue;
+          if (card.value==="J") return 11;
+          if (card.value==="Q") return 12;
+          if (card.value==="K") return 13;
+          return parseInt(card.value);
+        });
+        const isFaceCard = v=>["J","Q","K"].includes(v);
+        const isRed = s=>["hearts","diamonds"].includes(s);
+        const isRoyalFace = (v,s)=>isFaceCard(v)&&(s==="hearts"||s==="spades");
+        const isPrime = this._isPrime;
+        const isSequential = (v1,v2)=>{
+          if (aceValue===14){ if (v1===14&&v2===13||v1===13&&v2===14) return true; }
+          else { if (v1===1&&v2===2||v1===2&&v2===1) return true; }
+          return Math.abs(v1-v2)===1;
+        };
+        switch(eventId){
+          case "cards_none_red": return cardResults.every(c=>!isRed(c.suit));
+          case "cards_all_red": return cardResults.every(c=>isRed(c.suit));
+          case "cards_one_face": return cardResults.some(c=>isFaceCard(c.value));
+          case "cards_sum_gt_20": return cardValues.reduce((s,v)=>s+v,0)>20;
+          case "cards_sum_lt_10": return cardValues.reduce((s,v)=>s+v,0)<10;
+          case "cards_one_ace": return cardResults.some(c=>c.value==="A");
+          case "cards_same_suit": return cardResults[0].suit===cardResults[1].suit;
+          case "cards_same_value": return cardResults[0].value===cardResults[1].value;
+          case "cards_royal_face": return cardResults.some(c=>isRoyalFace(c.value,c.suit));
+          case "cards_sequential": return isSequential(cardValues[0],cardValues[1]);
+          case "cards_both_black": return cardResults.every(c=>!isRed(c.suit));
+          case "cards_sum_prime": return isPrime(cardValues.reduce((s,v)=>s+v,0));
+          case "cards_both_face": return cardResults.every(c=>isFaceCard(c.value));
+          case "cards_both_number": return cardResults.every(c=>!isFaceCard(c.value)&&c.value!=="A");
+          case "cards_avg_gt_8": return (cardValues[0]+cardValues[1])/2>8;
+          case "cards_both_even": return cardValues.every(v=>v%2===0);
+          default: return false;
+        }
+      }
+    };
+  }
+
+  createCoinEventGenerator(){
+    return {
+      generateEvents: () => this._buildEvents(this.gameConfig.EVENT_TYPES.COINS.events, id=>this.calculateCoinFairOdds(id)),
+      generateResults: () => [Math.random()<.5?"H":"T", Math.random()<.5?"H":"T", Math.random()<.5?"H":"T"],
+      evaluateEvent: (eventId, coinResults) => {
+        const headsCount = coinResults.filter(r=>r==="H").length;
+        const tailsCount = coinResults.length - headsCount;
+        switch(eventId){
+          case "coins_one_heads": return headsCount>=1;
+          case "coins_all_heads": return headsCount===coinResults.length;
+          case "coins_all_tails": return headsCount===0;
+          case "coins_majority_heads": return headsCount>tailsCount;
+          case "coins_exactly_two_heads": return headsCount===2;
+          case "coins_exactly_one_tails": return tailsCount===1;
+          case "coins_alternating": return coinResults[0]!==coinResults[1]&&coinResults[1]!==coinResults[2]||coinResults[0]!==coinResults[1]&&coinResults[0]===coinResults[2];
+          case "coins_first_heads": return coinResults[0]==="H";
+          case "coins_last_tails": return coinResults[coinResults.length-1]==="T";
+          case "coins_same_as_first": return coinResults.every(r=>r===coinResults[0]);
+          case "coins_not_two_tails": return tailsCount!==2;
+          case "coins_even_heads": return headsCount%2===0;
+          default: return false;
+        }
+      }
+    };
+  }
+
+  createSpecialBetEventGenerator(){
+    return {
+      generateEvents: () => {
+        const gen = () => {
+          const fairOdds = 1;
+          const isFair = Math.random() < .5;
+          let odds, variation = 0;
+          if (isFair){ odds = fairOdds; }
+          else {
+            variation = Math.random()*.2 - .1;
+            if (variation < 0) variation = Math.min(-.1, variation);
+            else variation = Math.max(.1, variation);
+            odds = fairOdds*(1+variation);
+          }
+          let opportunity=null, badBet=null;
+          if (variation>0) opportunity="small"; else if (variation<0) badBet="small";
+          return { odds:+odds.toFixed(2), fairOdds, variation, opportunity, badBet };
+        };
+        this.specialBets.put = gen();
+        this.specialBets.call = gen();
+        return [
+          { id:"put_bet", description:"Put: Win if total profit from all other bets is negative", ...this.specialBets.put },
+          { id:"call_bet", description:"Call: Win if total profit from all other bets is positive", ...this.specialBets.call }
+        ];
+      },
+      evaluateEvent: (eventId, allBetsResults) => {
+        const regularBets = allBetsResults.filter(b=>b.category!=="special");
+        if (regularBets.length===0) return false;
+        const total = regularBets.reduce((s,b)=>s+b.result,0);
+        if (eventId==="put_bet") return total<0;
+        if (eventId==="call_bet") return total>0;
+        return false;
+      }
+    };
+  }
+
+  _isPrime(num){
+    if (num<=1) return false;
+    if (num<=3) return true;
+    if (num%2===0||num%3===0) return false;
+    let i=5;
+    while (i*i<=num){ if (num%i===0||num%(i+2)===0) return false; i+=6; }
+    return true;
+  }
+
+  /* ---------------- fair-odds tables (exact) ---------------- */
+  calculateDiceFairOdds(eventId){
+    switch(eventId){
+      case "dice_sum_gt_7": return this.probabilityToOdds(15/36);
+      case "dice_sum_lt_7": return this.probabilityToOdds(15/36);
+      case "dice_sum_eq_7": return this.probabilityToOdds(1/6);
+      case "dice_one_gt_4": return this.probabilityToOdds(20/36);
+      case "dice_both_even": return this.probabilityToOdds(1/4);
+      case "dice_both_odd": return this.probabilityToOdds(1/4);
+      case "dice_doubles": return this.probabilityToOdds(1/6);
+      case "dice_one_eq_6": return this.probabilityToOdds(11/36);
+      case "dice_sum_even": return this.probabilityToOdds(1/2);
+      case "dice_sum_odd": return this.probabilityToOdds(1/2);
+      case "dice_sum_prime": return this.probabilityToOdds(15/36);
+      case "dice_product_gt_20": return this.probabilityToOdds(6/36);
+      case "dice_one_eq_1": return this.probabilityToOdds(11/36);
+      case "dice_consecutive": return this.probabilityToOdds(10/36);
+      case "dice_one_vs_two": return this.probabilityToOdds(15/36);
+      case "dice_both_lt_3": return this.probabilityToOdds(1/9);
+      default: return 2;
+    }
+  }
+  calculateCardFairOdds(eventId){
+    const aceValue = this.settings.aceValue;
+    switch(eventId){
+      case "cards_none_red": return this.probabilityToOdds(25/102);
+      case "cards_all_red": return this.probabilityToOdds(25/102);
+      case "cards_one_face": return this.probabilityToOdds(.412);
+      case "cards_sum_gt_20": return this.probabilityToOdds(aceValue===14?.211:.122);
+      case "cards_sum_lt_10": return this.probabilityToOdds(aceValue===14?.122:.211);
+      case "cards_one_ace": return this.probabilityToOdds(.15);
+      case "cards_same_suit": return this.probabilityToOdds(.235);
+      case "cards_same_value": return this.probabilityToOdds(.0588);
+      case "cards_royal_face": return this.probabilityToOdds(.22);
+      case "cards_sequential": return this.probabilityToOdds(.145);
+      case "cards_both_black": return this.probabilityToOdds(.245);
+      case "cards_sum_prime": return this.probabilityToOdds(.3);
+      case "cards_both_face": return this.probabilityToOdds(.05);
+      case "cards_both_number": return this.probabilityToOdds(.475);
+      case "cards_avg_gt_8": return this.probabilityToOdds(aceValue===14?.462:.324);
+      case "cards_both_even": return this.probabilityToOdds(aceValue===14?.285:.208);
+      default: return 2;
+    }
+  }
+  calculateCoinFairOdds(eventId){
+    switch(eventId){
+      case "coins_one_heads": return this.probabilityToOdds(7/8);
+      case "coins_all_heads": return this.probabilityToOdds(1/8);
+      case "coins_all_tails": return this.probabilityToOdds(1/8);
+      case "coins_majority_heads": return this.probabilityToOdds(1/2);
+      case "coins_exactly_two_heads": return this.probabilityToOdds(3/8);
+      case "coins_exactly_one_tails": return this.probabilityToOdds(3/8);
+      case "coins_alternating": return this.probabilityToOdds(1/4);
+      case "coins_first_heads": return this.probabilityToOdds(1/2);
+      case "coins_last_tails": return this.probabilityToOdds(1/2);
+      case "coins_same_as_first": return this.probabilityToOdds(1/4);
+      case "coins_not_two_tails": return this.probabilityToOdds(5/8);
+      case "coins_even_heads": return this.probabilityToOdds(1/2);
+      default: return 2;
+    }
+  }
+  probabilityToOdds(probability){ return parseFloat(((1-probability)/probability).toFixed(2)); }
+
+  /* ---------------- round flow ---------------- */
+  generateEvents(){
+    if (!this.isGameRunning) return;
+    this.currentEvents = { dice:[], cards:[], coins:[], special:[] };
+    this.selectedBets = [];
+    this.currentEvents.dice = this.eventGenerators.dice.generateEvents();
+    this.currentEvents.cards = this.eventGenerators.cards.generateEvents();
+    this.currentEvents.coins = this.eventGenerators.coins.generateEvents();
+    this.currentEvents.special = this.eventGenerators.special.generateEvents();
+    this.displayEvents();
+    this.elements.nextRoundButton.disabled = false;
+    this.elements.resolving.classList.remove("show");
+    this.updateSpecialBetsOdds();
+  }
+
+  updateSpecialBetsOdds(){
+    const putEl = document.getElementById("put-odds-value");
+    const callEl = document.getElementById("call-odds-value");
+    if (putEl) putEl.textContent = `${this.specialBets.put.odds}:1`;
+    if (callEl) callEl.textContent = `${this.specialBets.call.odds}:1`;
+    document.querySelectorAll('#special-bets .event[data-category="special"]').forEach(el=>{
+      ["failure","success","selected"].forEach(c=>el.classList.remove(c));
+    });
+  }
+
+  displayEvents(){
+    this.elements.diceEvents.innerHTML = "";
+    this.elements.cardEvents.innerHTML = "";
+    this.elements.coinEvents.innerHTML = "";
+    this.displayCategoryEvents("dice", this.elements.diceEvents);
+    this.displayCategoryEvents("cards", this.elements.cardEvents);
+    this.displayCategoryEvents("coins", this.elements.coinEvents);
+    this.initializeSpecialBetsHandlers();
+  }
+
+  protectNumericInput(el){
+    el.step = 1;
+    el.addEventListener("wheel", e=>e.preventDefault(), {passive:false});
+    el.addEventListener("keydown", e=>{ if (e.key==="ArrowUp"||e.key==="ArrowDown") e.preventDefault(); });
+  }
+
+  initializeSpecialBetsHandlers(){
+    document.querySelectorAll(".special-bet-row .event").forEach(bet=>{
+      const newBet = bet.cloneNode(true);
+      bet.parentNode.replaceChild(newBet, bet);
+      newBet.addEventListener("click", ()=> this.toggleBet(newBet));
+      const actions = newBet.querySelector(".event-actions");
+      if (actions){
+        actions.innerHTML = "";
+        if (this.settings.betType === "variable"){
+          const input = document.createElement("input");
+          input.type="number"; input.className="bet-input"; input.min=1; input.max=this.balance;
+          input.value = Math.min(this.balance, this.gameConfig.DEFAULT_BET_AMOUNT);
+          input.addEventListener("click", e=>e.stopPropagation());
+          this.protectNumericInput(input);
+          actions.appendChild(input);
+        } else {
+          const span = document.createElement("span");
+          span.className="bet-amount"; span.textContent = `Bet: ${this.fixedBetAmount} coins`;
+          actions.appendChild(span);
+        }
+        const take = document.createElement("button");
+        take.className="take-bet"; take.textContent="Take";
+        take.addEventListener("click", e=>{ e.stopPropagation(); this.toggleBet(newBet); });
+        actions.appendChild(take);
+      }
+    });
+  }
+
+  displayCategoryEvents(category, container){
+    this.currentEvents[category].forEach(event=>{
+      const el = document.createElement("div");
+      el.className = "event"; el.dataset.category = category; el.dataset.eventId = event.id;
+
+      const content = document.createElement("div"); content.className="event-content";
+      const desc = document.createElement("div"); desc.className="event-description"; desc.innerHTML = event.description;
+      content.appendChild(desc);
+
+      const oddsBox = document.createElement("div"); oddsBox.className="odds-box";
+      const label = document.createElement("div"); label.className="odds-label"; label.textContent="Odds";
+      const value = document.createElement("div"); value.className="odds-value"; value.textContent = `${event.odds}:1`;
+      oddsBox.appendChild(label); oddsBox.appendChild(value);
+      el.appendChild(oddsBox);
+
+      const actions = document.createElement("div"); actions.className="event-actions";
+      if (this.settings.betType === "variable"){
+        const input = document.createElement("input");
+        input.type="number"; input.className="bet-input"; input.min=1; input.max=this.balance;
+        input.value = Math.min(this.balance, this.gameConfig.DEFAULT_BET_AMOUNT);
+        input.addEventListener("click", e=>e.stopPropagation());
+        this.protectNumericInput(input);
+        actions.appendChild(input);
+      } else {
+        const span = document.createElement("span");
+        span.className="bet-amount"; span.textContent = `Bet: ${this.fixedBetAmount} coins`;
+        actions.appendChild(span);
+      }
+      const take = document.createElement("button");
+      take.className="take-bet"; take.textContent="Take";
+      take.addEventListener("click", e=>{ e.stopPropagation(); this.toggleBet(el); });
+      actions.appendChild(take);
+
+      el.appendChild(content);
+      el.appendChild(actions);
+      el.addEventListener("click", ()=> this.toggleBet(el));
+      container.appendChild(el);
+    });
+  }
+
+  toggleBet(eventElement){
+    if (!this.isRoundActive) return;
+    const category = eventElement.dataset.category;
+    const eventId = eventElement.dataset.eventId;
+    const event = this.currentEvents[category].find(e=>e.id===eventId);
+    const opportunity = event.opportunity;
+    const badBet = event.badBet;
+
+    if (eventElement.classList.contains("selected")){
+      eventElement.classList.remove("selected");
+      this.selectedBets = this.selectedBets.filter(b=>!(b.category===category && b.eventId===eventId));
+      const input = eventElement.querySelector(".bet-input");
+      if (input){
+        input.removeEventListener("change", input._updateHandler);
+        input.removeEventListener("input", input._updateHandler);
+        delete input._updateHandler;
+      }
+    } else {
+      let betAmount;
+      if (this.settings.betType === "variable"){
+        const input = eventElement.querySelector(".bet-input");
+        betAmount = parseInt(input.value);
+        if (isNaN(betAmount) || betAmount < 1){ notify("Please enter a valid bet amount (must be a positive number)."); return; }
+        if (betAmount > this.balance){ notify("You don't have enough coins for this bet."); return; }
+        const currentTotal = this.selectedBets.reduce((s,b)=>s+b.betAmount,0);
+        if (currentTotal + betAmount > this.balance){ notify(`Adding this bet would exceed your balance. You have ${this.balance} coins, and your current bets total ${currentTotal} coins.`); return; }
+        const updateHandler = e=>{
+          const newAmount = parseInt(e.target.value);
+          if (isNaN(newAmount) || newAmount < 1) return;
+          const idx = this.selectedBets.findIndex(b=>b.category===category && b.eventId===eventId);
+          if (idx !== -1){
+            const oldAmount = this.selectedBets[idx].betAmount;
+            const others = this.selectedBets.reduce((s,b,i)=> i!==idx ? s+b.betAmount : s, 0);
+            if (newAmount > this.balance){ notify("You don't have enough coins for this bet amount."); e.target.value = oldAmount; return; }
+            if (others + newAmount > this.balance){ notify(`Changing this bet would exceed your balance. You have ${this.balance} coins, and your other bets total ${others} coins.`); e.target.value = oldAmount; return; }
+            this.selectedBets[idx].betAmount = newAmount;
+          }
+        };
+        input._updateHandler = updateHandler;
+        input.addEventListener("change", updateHandler);
+        input.addEventListener("input", updateHandler);
+      } else {
+        betAmount = this.fixedBetAmount;
+        if (betAmount > this.balance){ notify("You don't have enough coins for this bet."); return; }
+        const currentTotal = this.selectedBets.reduce((s,b)=>s+b.betAmount,0);
+        if (currentTotal + betAmount > this.balance){ notify(`Adding this bet would exceed your balance. You have ${this.balance} coins, and your current bets total ${currentTotal} coins.`); return; }
+      }
+      eventElement.classList.add("selected");
+      this.selectedBets.push({ category, eventId, odds:event.odds, fairOdds:event.fairOdds, betAmount, description:event.description, opportunity, badBet });
+    }
+  }
+
+  nextRound(){
+    if (this.selectedBets.length > 0){
+      let total = 0;
+      for (const bet of this.selectedBets){
+        if (isNaN(bet.betAmount) || bet.betAmount <= 0){ notify("Please enter valid bet amounts (positive numbers) for all selected bets."); return; }
+        total += bet.betAmount;
+      }
+      if (total > this.balance){ notify(`Your total bet amount (${total} coins) exceeds your available balance (${this.balance} coins).`); return; }
+    }
+    this.recordSeenOpportunities();
+    this.isRoundActive = false;
+    this.elements.nextRoundButton.disabled = true;
+    const diceResults = this.eventGenerators.dice.generateResults();
+    const cardResults = this.eventGenerators.cards.generateResults();
+    const coinResults = this.eventGenerators.coins.generateResults();
+
+    if (this.selectedBets.length > 0){
+      const finishRound = () => {
+        this.processBets(diceResults, cardResults, coinResults);
+        this.hideRoundResults();
+        if (this.balance <= 0){ this.endQuiz(); return; }
+        if (!this.isGameRunning) return;
+        this.isRoundActive = true;
+        this.generateEvents();
+      };
+      if (this.settings.skipAnimation){
+        finishRound();
+      } else {
+        this.elements.resolving.classList.add("show");
+        this.displayRoundResults(diceResults, cardResults, coinResults);
+        setTimeout(()=>{
+          this.processBets(diceResults, cardResults, coinResults);
+          setTimeout(()=>{
+            this.elements.resolving.classList.remove("show");
+            this.hideRoundResults();
+            if (this.balance <= 0){ this.endQuiz(); return; }
+            if (!this.isGameRunning) return;
+            this.isRoundActive = true;
+            this.generateEvents();
+          }, this.gameConfig.ANIMATION_DURATION);
+        }, 10);
+      }
+    } else {
+      const roundHistory = {
+        roundNumber: this.roundNumber,
+        balanceBefore: this.balance,
+        balanceAfter: this.balance,
+        totalWinnings: 0,
+        results: { dice:diceResults, cards:cardResults, coins:coinResults },
+        bets: [], skipped: true,
+        available: this.cloneCurrentEvents()
+      };
+      this.gameHistory.push(roundHistory);
+      this.roundNumber++;
+      this.updateRoundNumberDisplay();
+      this.isRoundActive = true;
+      this.generateEvents();
+    }
+  }
+
+  recordSeenOpportunities(){
+    ["dice","cards","coins"].forEach(cat=>{
+      this.currentEvents[cat].forEach(ev=>{
+        if (ev.opportunity){
+          const b = this.opportunityStats[cat][ev.opportunity];
+          b.seen += 1;
+          b.seenBets.push({ round:this.roundNumber, desc:ev.description, odds:ev.odds.toFixed(2), fair:ev.fairOdds.toFixed(2) });
+        } else if (ev.badBet){
+          const b = this.negativeStats[cat][ev.badBet];
+          b.seen += 1;
+          b.seenBets.push({ round:this.roundNumber, desc:ev.description, odds:ev.odds.toFixed(2), fair:ev.fairOdds.toFixed(2) });
+        }
+      });
+    });
+  }
+
+  displayRoundResults(diceResults, cardResults, coinResults){
+    if (this.settings.skipAnimation) return;
+    const dice = document.querySelectorAll(".dice-icon .header-die");
+    diceResults.forEach((value,i)=>{
+      if (i < dice.length){ dice[i].querySelector("span").textContent = value; dice[i].classList.add("result-revealed"); }
+    });
+    const cards = document.querySelectorAll(".card-icon .header-card-inner");
+    cardResults.forEach((card,i)=>{
+      if (i < cards.length){
+        const ph = cards[i];
+        ph.innerHTML = "";
+        ph.className = "header-card-inner result-revealed " + (card.isRed ? "red" : "black");
+        const v = document.createElement("div"); v.className="card-value"; v.textContent = card.value; ph.appendChild(v);
+        const s = document.createElement("div"); s.className="card-suit";
+        s.textContent = {hearts:"♥",diamonds:"♦",clubs:"♣",spades:"♠"}[card.suit]; ph.appendChild(s);
+      }
+    });
+    const coins = document.querySelectorAll(".coin-icon .header-coin");
+    coinResults.forEach((r,i)=>{ if (i < coins.length){ coins[i].textContent = r; coins[i].classList.add("result-revealed"); } });
+  }
+
+  hideRoundResults(){
+    document.querySelectorAll(".dice-icon .header-die").forEach(ph=>{ ph.querySelector("span").textContent="?"; ph.classList.remove("result-revealed"); });
+    document.querySelectorAll(".card-icon .header-card-inner").forEach(ph=>{ ph.className="header-card-inner"; ph.innerHTML="?"; });
+    document.querySelectorAll(".coin-icon .header-coin").forEach(ph=>{ ph.textContent="?"; ph.classList.remove("result-revealed"); });
+  }
+
+  processBets(diceResults, cardResults, coinResults){
+    let winnings = 0;
+    const allBetsResults = [];
+    const roundHistory = {
+      roundNumber: this.roundNumber,
+      balanceBefore: this.balance,
+      results: { dice:diceResults, cards:cardResults, coins:coinResults },
+      bets: [], available: this.cloneCurrentEvents()
+    };
+    const regularBets = this.selectedBets.filter(b=>b.category!=="special");
+    const specialBets = this.selectedBets.filter(b=>b.category==="special");
+
+    regularBets.forEach(bet=>{
+      const el = document.querySelector(`[data-category="${bet.category}"][data-event-id="${bet.eventId}"]`);
+      let isWin = false;
+      if (bet.category==="dice") isWin = this.eventGenerators.dice.evaluateEvent(bet.eventId, diceResults);
+      else if (bet.category==="cards") isWin = this.eventGenerators.cards.evaluateEvent(bet.eventId, cardResults);
+      else if (bet.category==="coins") isWin = this.eventGenerators.coins.evaluateEvent(bet.eventId, coinResults);
+      let betResult = 0;
+      if (isWin){ if(el) el.classList.add("success"); const w = Math.round(bet.betAmount*bet.odds)+bet.betAmount; betResult = w - bet.betAmount; winnings += betResult; }
+      else { if(el) el.classList.add("failure"); betResult = -bet.betAmount; winnings += betResult; }
+      allBetsResults.push({ ...bet, isWin, result:betResult });
+
+      if (bet.opportunity){
+        const b = this.opportunityStats[bet.category][bet.opportunity];
+        b.taken += 1;
+        const idx = b.seenBets.findIndex(x=>x.desc===bet.description && x.odds===bet.odds.toFixed(2));
+        if (idx > -1) b.seenBets.splice(idx,1);
+        b.takenBets.push({ round:this.roundNumber, desc:bet.description, odds:bet.odds.toFixed(2), fair:bet.fairOdds.toFixed(2) });
+      } else if (bet.badBet){
+        const b = this.negativeStats[bet.category][bet.badBet];
+        b.taken += 1;
+        const idx = b.seenBets.findIndex(x=>x.desc===bet.description && x.odds===bet.odds.toFixed(2));
+        if (idx > -1) b.seenBets.splice(idx,1);
+        b.takenBets.push({ round:this.roundNumber, desc:bet.description, odds:bet.odds.toFixed(2), fair:bet.fairOdds.toFixed(2) });
+      }
+      roundHistory.bets.push({ round:this.roundNumber, eventId:bet.eventId, category:bet.category, description:bet.description, odds:bet.odds, fairOdds:bet.fairOdds, betAmount:bet.betAmount, isWin, result:betResult, isRegularBet:true });
+    });
+
+    specialBets.forEach(bet=>{
+      const el = document.querySelector(`[data-category="${bet.category}"][data-event-id="${bet.eventId}"]`);
+      const isWin = this.eventGenerators.special.evaluateEvent(bet.eventId, allBetsResults);
+      let betResult = 0;
+      if (isWin){ if(el) el.classList.add("success"); const w = Math.round(bet.betAmount*bet.odds)+bet.betAmount; betResult = w - bet.betAmount; winnings += betResult; }
+      else { if(el) el.classList.add("failure"); betResult = -bet.betAmount; winnings += betResult; }
+      roundHistory.bets.push({ round:this.roundNumber, eventId:bet.eventId, category:bet.category, description:bet.description, odds:bet.odds, fairOdds:bet.fairOdds, betAmount:bet.betAmount, isWin, result:betResult, isPut:bet.eventId==="put_bet", isCall:bet.eventId==="call_bet" });
+    });
+
+    if (roundHistory.bets.length === 2){
+      const putBet = roundHistory.bets.find(b=>b.isPut);
+      const regularBet = roundHistory.bets.find(b=>b.isRegularBet);
+      if (putBet && regularBet){
+        const putPotentialProfit = putBet.betAmount*putBet.odds - regularBet.betAmount;
+        const regPotentialProfit = regularBet.betAmount*regularBet.odds - putBet.betAmount;
+        const isArbitrage = putPotentialProfit > 0 && regPotentialProfit > 0;
+        const totalBetSize = putBet.betAmount + regularBet.betAmount;
+        const usedBudgetPercentage = totalBetSize / roundHistory.balanceBefore;
+        roundHistory.arbitrageInfo = { isArbitrage, putPotentialProfit, regPotentialProfit, totalBetSize, usedBudgetPercentage, optimalStrategy: isArbitrage && usedBudgetPercentage > .8 ? "optimal" : "underutilized" };
+      }
+    }
+
+    this.balance += winnings;
+    this.updateBalanceDisplay();
+    roundHistory.totalWinnings = winnings;
+    roundHistory.balanceAfter = this.balance;
+    this.gameHistory.push(roundHistory);
+    this.score = this.balance;
+    this.updateScore();
+    this.roundNumber++;
+    this.updateRoundNumberDisplay();
+  }
+
+  /* ---------------- results overview (faithful rebuild) ---------------- */
+  generateQuestionsOverview(){
+    // Score-save hook from the original (no-op without the WordPress backend/jQuery).
+    const gameData = { action:"save_unified_game_score", game_type:"probability_betting", score:this.balance, time_limit:this.settings.timeLimit, events:this.settings.eventsPerCategory, ace_value:this.settings.aceValue, bet_type:this.settings.betType, fixed_bet_amount:this.settings.fixedBetAmount };
+    try { if (window.jQuery && this.config.ajax_object && this.config.ajax_object.ajax_url){ window.jQuery.ajax({ type:"POST", url:this.config.ajax_object.ajax_url, data:gameData }); } } catch(e){}
+
+    const categorySummary = { dice:{wins:0,losses:0,total:0,profit:0}, cards:{wins:0,losses:0,total:0,profit:0}, coins:{wins:0,losses:0,total:0,profit:0}, special:{wins:0,losses:0,total:0,profit:0} };
+    this.gameHistory.forEach(round=>{
+      if (round.bets) round.bets.forEach(bet=>{
+        categorySummary[bet.category].total++;
+        if (bet.isWin){ categorySummary[bet.category].wins++; categorySummary[bet.category].profit += bet.result; }
+        else { categorySummary[bet.category].losses++; categorySummary[bet.category].profit += bet.result; }
+      });
+    });
+    const totalBets = Object.values(categorySummary).reduce((s,c)=>s+c.total,0);
+    const totalWins = Object.values(categorySummary).reduce((s,c)=>s+c.wins,0);
+    const totalLosses = Object.values(categorySummary).reduce((s,c)=>s+c.losses,0);
+    const totalProfit = Object.values(categorySummary).reduce((s,c)=>s+c.profit,0);
+    const winRate = totalBets > 0 ? Math.round(totalWins/totalBets*100) : 0;
+
+    const roundHistoryHTML = this.gameHistory.map(round=>{
+      const isSkipped = round.skipped || !round.bets || round.bets.length === 0;
+      const betsWithKelly = isSkipped ? [] : round.bets.map(bet=>{
+        const fairProbability = 1/(bet.fairOdds+1);
+        const netOdds = bet.odds;
+        const optimalKelly = (netOdds*fairProbability - (1-fairProbability))/netOdds;
+        const kellyPercentage = Math.max(0, Math.min(1, optimalKelly))*100;
+        const optimalBetAmount = Math.round(kellyPercentage/100*round.balanceBefore);
+        let betQuality = (bet.betAmount <= optimalBetAmount*1.5 && bet.betAmount >= optimalBetAmount*.5) ? "good" : (bet.betAmount > optimalBetAmount*1.5 ? "overbet" : "underbet");
+        if (round.arbitrageInfo && round.arbitrageInfo.isArbitrage)
+          betQuality = round.arbitrageInfo.optimalStrategy === "optimal" ? "arbitrage" : "arbitrage-underutilized";
+        return { ...bet, kellyPercentage:kellyPercentage.toFixed(1), optimalBetAmount, actualBetAmount:bet.betAmount, betQuality };
+      });
+
+      const eventRow = (cat, event) => {
+        const betOn = round.bets.find(b=>b.eventId===event.id);
+        const eventOutcome = this.eventGenerators[cat].evaluateEvent(event.id, round.results[cat]);
+        let eventClass = betOn ? (eventOutcome ? "success" : "failure") : "";
+        let opportunityClass = "";
+        if (!betOn){
+          if (event.opportunity) opportunityClass = `opportunity-${event.opportunity}`;
+          if (event.badBet) opportunityClass = `bad-bet-${event.badBet}`;
+        }
+        const edge = ((event.odds-event.fairOdds)/event.fairOdds*100).toFixed(1);
+        const pos = event.odds > event.fairOdds;
+        return `
+          <div class="event ${eventClass} ${opportunityClass}" data-category="${cat}" data-event-id="${event.id}">
+            <div class="event-content"><div class="event-description">${event.description}</div></div>
+            <div class="event-actions">
+              ${betOn
+                ? `<div class="bet-result-tag ${eventOutcome?"win":"loss"}">${eventOutcome?"WIN":"LOSS"} (${betOn.betAmount} → ${eventOutcome?(betOn.betAmount*event.odds).toFixed(0):0})</div>`
+                : `<div class="not-bet-tag">Not bet</div>`}
+            </div>
+            <div class="bet-details-info">
+              <span>Odds: <strong>${event.odds.toFixed(2)}:1</strong></span>
+              <span>Fair: <strong>${event.fairOdds.toFixed(2)}:1</strong></span>
+              <span class="edge-${pos?"positive":"negative"}">Edge: <strong>${pos?"+":""}${edge}%</strong></span>
+            </div>
+          </div>`;
+      };
+
+      const diceHeader = round.results.dice.map(d=>`<div class="header-die"><span>${d}</span></div>`).join("");
+      const cardHeader = round.results.cards.map(card=>{
+        const sym = {hearts:"♥",diamonds:"♦",clubs:"♣",spades:"♠"}[card.suit];
+        return `<div class="header-card"><div class="header-card-inner ${card.isRed?"red":"black"}"><div class="card-value">${card.value}</div><div class="card-suit">${sym}</div></div></div>`;
+      }).join("");
+      const coinHeader = round.results.coins.map(c=>`<div class="header-coin">${c}</div>`).join("");
+
+      const kellySection = isSkipped
+        ? `<div class="skipped-round-message"><p>No bets were placed in this round. All opportunities were passed.</p></div>`
+        : `<div class="kelly-analysis-section">
+             <h5>Kelly Criterion Analysis for Taken Bets ${this.settings.betType==="fixed"?"(Note: Bet Amount Type is Fixed, so evaluation is informative)":""}</h5>
+             <table class="kelly-analysis-table">
+               <thead><tr><th>Bet</th><th>Given Odds</th><th>Fair Odds</th><th>Kelly %</th><th>Optimal Bet</th><th>Actual Bet</th><th>Evaluation</th><th>Bet Result</th></tr></thead>
+               <tbody>
+                 ${betsWithKelly.map(bet=>`
+                   <tr>
+                     <td>${bet.description.replace(/<br>/g," ")}</td>
+                     <td>${bet.odds.toFixed(2)}:1</td>
+                     <td>${bet.fairOdds.toFixed(2)}:1</td>
+                     <td>${bet.kellyPercentage}%</td>
+                     <td>${bet.optimalBetAmount}</td>
+                     <td>${bet.actualBetAmount}</td>
+                     <td class="bet-quality-${bet.betQuality}">${bet.betQuality==="arbitrage"?"arbitrage applied":bet.betQuality==="arbitrage-underutilized"?"arbitrage applied, could have bet bigger":bet.betQuality}</td>
+                     <td class="${bet.isWin?"bet-win":"bet-loss"}">${bet.isWin?"+"+bet.result:bet.result}</td>
+                   </tr>`).join("")}
+               </tbody>
+             </table>
+           </div>`;
+
+      return `
+        <div class="round-kelly-details">
+          <div class="round-header">
+            <h4>Round ${round.roundNumber} Results</h4>
+            <div class="round-balance">Balance: ${round.balanceBefore} → ${round.balanceAfter} ${!isSkipped?`(${round.totalWinnings>=0?"+":""}${round.totalWinnings})`:"(No bets placed)"}</div>
+          </div>
+          <div class="events-container">
+            <div class="category">
+              <div class="category-header"><div class="category-icon dice-icon">${diceHeader}</div><h3 class="category-title">Dice</h3></div>
+              <div class="dice-events-results">${round.available.dice.map(e=>eventRow("dice",e)).join("")}</div>
+            </div>
+            <div class="category">
+              <div class="category-header"><div class="category-icon card-icon">${cardHeader}</div><h3 class="category-title">Cards</h3></div>
+              <div class="card-events-results">${round.available.cards.map(e=>eventRow("cards",e)).join("")}</div>
+            </div>
+            <div class="category">
+              <div class="category-header"><div class="category-icon coin-icon">${coinHeader}</div><h3 class="category-title">Coins</h3></div>
+              <div class="coin-events-results">${round.available.coins.map(e=>eventRow("coins",e)).join("")}</div>
+            </div>
+          </div>
+          ${kellySection}
+        </div>`;
+    }).join("");
+
+    const performanceGrid = Object.entries(categorySummary).map(([category,stats])=>{
+      const catWinRate = stats.total > 0 ? Math.round(stats.wins/stats.total*100) : 0;
+      let winRateClass = "medium";
+      if (catWinRate >= 65) winRateClass = "high"; else if (catWinRate < 40) winRateClass = "low";
+      let profitClass = "neutral";
+      if (stats.profit > 0) profitClass = "positive"; else if (stats.profit < 0) profitClass = "negative";
+      return `
+        <div class="category-card">
+          <div class="category-header">
+            <span class="category-name">${category.charAt(0).toUpperCase()+category.slice(1)}</span>
+            <span class="win-rate ${winRateClass}">${catWinRate}% Win Rate</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-cell span-full"><div class="stat-label">Bets</div><div class="stat-value">${stats.total}</div></div>
+            <div class="stat-cell"><div class="stat-label">Wins</div><div class="stat-value">${stats.wins}</div></div>
+            <div class="stat-cell"><div class="stat-label">Losses</div><div class="stat-value">${stats.losses}</div></div>
+          </div>
+          <div class="profit-indicator ${profitClass}">${stats.profit>0?"Profit":stats.profit<0?"Loss":"Break Even"}: ${stats.profit>0?"+":""}${stats.profit} coins</div>
+        </div>`;
+    }).join("");
+
+    const betItem = b => {
+      const fairOdds = parseFloat(b.fair), offered = parseFloat(b.odds);
+      const edge = ((offered-fairOdds)/fairOdds*100).toFixed(1);
+      const pos = offered > fairOdds;
+      return `
+        <li class="bet-item">
+          <div class="bet-title-row"><p class="bet-title">${b.desc.replace(/<br>/g," ")}</p><p class="bet-round">Round ${b.round}</p></div>
+          <div class="bet-details-info">
+            <span>Given odds: <strong>${b.odds}:1</strong></span>
+            <span>Fair odds: <strong>${b.fair}:1</strong></span>
+            <span class="edge-${pos?"positive":"negative"}">Edge: <strong>${pos?"+":""}${edge}%</strong></span>
+          </div>
+        </li>`;
+    };
+
+    const opportunityAnalysis = ["dice","cards","coins"].map(cat=>{
+      let html = `<div class="analysis-col"><h5>${cat.charAt(0).toUpperCase()+cat.slice(1)}</h5>`;
+      let hasContent = false;
+      ["small","medium","large"].forEach(sz=>{
+        const stat = this.opportunityStats[cat][sz];
+        if (stat.seen === 0) return;
+        hasContent = true;
+        const pct = stat.seen > 0 ? Math.round(stat.taken/stat.seen*100) : 0;
+        let cls = "medium"; if (pct >= 75) cls = "good"; else if (pct < 40) cls = "poor";
+        const desc = sz==="small" ? "Odds 1-10% better than fair" : sz==="medium" ? "Odds 10-20% better than fair" : "Odds >20% better than fair";
+        html += `<details class="analysis-item"><summary><span class="summary-arrow">▶</span><span class="analysis-label">${sz}</span><span class="analysis-value ${cls}">${stat.taken} of ${stat.seen} (${pct}%)</span></summary><div class="analysis-details"><p class="details-description">${desc}</p>`;
+        if (stat.takenBets.length || stat.seenBets.length){
+          html += `<ul class="bet-list">`;
+          if (stat.takenBets.length){ html += `<li class="group-heading">Taken</li>`; stat.takenBets.forEach(b=> html += betItem(b)); }
+          if (stat.takenBets.length && stat.seenBets.length) html += `<li class="list-separator"></li>`;
+          if (stat.seenBets.length){ html += `<li class="group-heading">Missed Opportunities</li>`; stat.seenBets.forEach(b=> html += betItem(b)); }
+          html += `</ul>`;
+        }
+        html += `</div></details>`;
+      });
+      if (!hasContent) html += `<div class="analysis-placeholder">No ${cat} opportunities were presented</div>`;
+      html += `</div>`;
+      return html;
+    }).join("");
+
+    const badBetAnalysis = ["dice","cards","coins"].map(cat=>{
+      let html = `<div class="analysis-col"><h5>${cat.charAt(0).toUpperCase()+cat.slice(1)}</h5>`;
+      let hasContent = false;
+      ["small","medium","large"].forEach(sz=>{
+        const stat = this.negativeStats[cat][sz];
+        if (stat.seen === 0) return;
+        hasContent = true;
+        const pct = stat.seen > 0 ? Math.round(stat.taken/stat.seen*100) : 0;
+        let cls = "good"; if (pct >= 60) cls = "poor"; else if (pct >= 30) cls = "medium";
+        const desc = sz==="small" ? "Odds 1-10% worse than fair" : sz==="medium" ? "Odds 10-20% worse than fair" : "Odds >20% worse than fair";
+        html += `<details class="analysis-item"><summary><span class="summary-arrow">▶</span><span class="analysis-label">${sz}</span><span class="analysis-value ${cls}">${stat.taken} of ${stat.seen} (${pct}%)</span></summary><div class="analysis-details"><p class="details-description">${desc}</p>`;
+        if (stat.takenBets.length || stat.seenBets.length){
+          html += `<ul class="bet-list">`;
+          if (stat.takenBets.length){ html += `<li class="group-heading">Mistakenly Taken</li>`; stat.takenBets.forEach(b=> html += betItem(b)); }
+          if (stat.takenBets.length && stat.seenBets.length) html += `<li class="list-separator"></li>`;
+          if (stat.seenBets.length){ html += `<li class="group-heading">Correctly Avoided</li>`; stat.seenBets.forEach(b=> html += betItem(b)); }
+          html += `</ul>`;
+        }
+        html += `</div></details>`;
+      });
+      if (!hasContent) html += `<div class="analysis-placeholder">No bad ${cat} bets were presented</div>`;
+      html += `</div>`;
+      return html;
+    }).join("");
+
+    return `
+      <div class="questions-overview">
+        <div class="totals-card">
+          <div class="totals-header">Overall Performance</div>
+          <div class="totals-content">
+            <div class="total-stat"><div class="total-label">Starting Balance</div><div class="total-value">${this.gameConfig.STARTING_BALANCE}</div></div>
+            <div class="total-stat"><div class="total-label">End Balance</div><div class="total-value">${this.balance}</div></div>
+            <div class="total-stat"><div class="total-label">Total Bets</div><div class="total-value">${totalBets}</div></div>
+            <div class="total-stat"><div class="total-label">Wins</div><div class="total-value">${totalWins}</div></div>
+            <div class="total-stat"><div class="total-label">Losses</div><div class="total-value">${totalLosses}</div></div>
+            <div class="total-stat"><div class="total-label">Win Rate</div><div class="total-value ${winRate>=50?"positive":"negative"}">${winRate}%</div></div>
+            <div class="total-stat"><div class="total-label">Total Profit</div><div class="total-value ${totalProfit>0?"positive":totalProfit<0?"negative":""}">${totalProfit>0?"+":""}${totalProfit}</div></div>
+          </div>
+        </div>
+
+        <div class="performance-section">
+          <h3>Performance by Category</h3>
+          <div class="performance-grid">${performanceGrid}</div>
+        </div>
+
+        <div class="opportunity-analysis">
+          <h4>Opportunities Taken vs Missed</h4>
+          <p class="analysis-description">This section shows when the odds offered were <strong>better than fair</strong>. Taking these bets is expected to be advantageous in the long run.</p>
+          <div class="analysis-container">${opportunityAnalysis}</div>
+        </div>
+
+        <div class="bad-bet-analysis">
+          <h4>Bad Bets Taken vs Avoided</h4>
+          <p class="analysis-description">This section shows when the odds offered were <strong>worse than fair</strong>. Avoiding these bets is expected to be advantageous in the long run.</p>
+          <div class="analysis-container">${badBetAnalysis}</div>
+        </div>
+
+        <div class="round-kelly-analysis">
+          <h3 style="font-size:1.1rem;">Round-by-Round Results</h3>
+          ${roundHistoryHTML}
+        </div>
+
+        <div class="kelly-explanation-box">
+          <h3>Kelly Criterion Explanation</h3>
+          <p>The Kelly Criterion suggests the optimal percentage of your bankroll to bet based on the edge you have. For each bet, we've calculated:</p>
+          <ul>
+            <li><strong>Kelly %</strong>: The optimal fraction of your bankroll to wager</li>
+            <li><strong>Optimal Bet</strong>: The suggested bet amount based on your balance at the time</li>
+            <li><strong>Evaluation</strong>: How your actual bet compared to the Kelly-optimal bet</li>
+          </ul>
+          <p>The Kelly Criterion tells you what fraction <em>f*</em> of your bankroll to wager to maximize long-term growth:</p>
+          <p class="kelly-formula">f* = (b·p − q) / b</p>
+          <ul>
+            <li><strong>b</strong> = net odds received on the bet (decimal odds − 1)</li>
+            <li><strong>p</strong> = probability of winning</li>
+            <li><strong>q</strong> = probability of losing = 1 − p</li>
+          </ul>
+          <p class="kelly-example"><strong>Example:</strong> if the decimal odds are 3.0 (so <b>2</b> net), and you estimate p = 0.40 (q = 0.60), then:<br>f* = (2×0.40 − 0.60) / 2 = (0.80 − 0.60) / 2 = 0.10 → you'd bet 10% of your bankroll.</p>
+        </div>
+
+        <div style="margin-top:18px;text-align:center;">
+          <a href="/probability-betting-game-top-scores/" target="_blank" class="leaderboard-link">
+            <div class="leaderboard-card">
+              <span class="trophy-emoji">🏆</span>
+              <div class="leaderboard-content">
+                <h3 class="leaderboard-title">Global Leaderboard</h3>
+                <p class="leaderboard-subtitle">See how you stack up against the top 20 players!</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>`;
+  }
+
+  restart(){ window.location.reload(); }
+
+  makeEmptyOpportunityStats(){ return this._emptyStats(); }
+  makeEmptyNegativeStats(){ return this._emptyStats(); }
+  _emptyStats(){
+    const bucket = () => ({ taken:0, seen:0, takenBets:[], seenBets:[] });
+    const cat = () => ({ small:bucket(), medium:bucket(), large:bucket() });
+    return { dice:cat(), cards:cat(), coins:cat() };
+  }
+  cloneCurrentEvents(){
+    return {
+      dice: JSON.parse(JSON.stringify(this.currentEvents.dice)),
+      cards: JSON.parse(JSON.stringify(this.currentEvents.cards)),
+      coins: JSON.parse(JSON.stringify(this.currentEvents.coins)),
+      special: JSON.parse(JSON.stringify(this.currentEvents.special))
+    };
+  }
+}
+window.ProbabilityBettingGame = ProbabilityBettingGame;
+
+/* ============================================================
+   Boot
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", function(){
+  window.balanceAnimator = new BalanceAnimationSystem();
+  const config = {
+    type: "probability_betting",
+    passingScores: { 180:1300, 300:1800, 600:3000 },
+    ajax_object: { ajax_url: "" }
+  };
+  window.game = new ProbabilityBettingGame(config);
+});
+</script>
+</body>
+</html>
