@@ -29,4 +29,6 @@ Important: [Ongoing Quant competitions 2026](https://docs.google.com/document/d/
 [Akuna Capital Options 101](https://akunacapital.teachable.com/courses/enrolled/837423)
 [Python for Finance](https://www.sea-stat.com/wp-content/uploads/2021/05/Yves-Hilpisch-Python-for-Finance_-Mastering-Data-Driven-Finance-Book-OReilly-2018.pdf)
 [The Man Who solved the Market](https://s3.ap-south-1.amazonaws.com/storeassets.im-cdn.com/temp/cuploads/ap-south-1%2525253Acf57593f-4ea2-4a77-b6ca-efcb0544fad0/success--point/products/1597834756404The-Man-Who-Solved-The-Market.pdf)
+[List of openings in quants](https://www.r0y.xyz/students)	
+[Quant trading io](https://quanttrading.io/)
 
