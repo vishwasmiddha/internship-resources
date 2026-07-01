@@ -52,15 +52,7 @@ Trying to limit your peers’ growth does not give you an advantage. In fact, it
 
 
 
-One last thing - since I’m in the MT1 branch and my internship season is coming up this summer, I’m also trying to build a community for MT1 students. The goal is simple: share progress, stay accountable, and help each other improve.
-
-
-
-If done right, this kind of collective effort can significantly boost everyone’s progress over the summer.
-
-
-
-Special credits to Subham Goenka, Sagnik Baidya and seniors for contributing and making this possible.
+Special credits to Asmit Karmakar, Subham Goenka, Sagnik Baidya and seniors for contributing and making this possible.
 
 
 
