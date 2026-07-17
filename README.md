@@ -56,7 +56,3 @@ Special credits to Asmit Karmakar, Subham Goenka, Sagnik Baidya and seniors for 
 
 
 
-Extra Links:
-
-1. https://github.com/anirudhakulkarni/Placements-2024
-
